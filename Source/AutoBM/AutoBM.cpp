@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Project 3 @Chris__boyce
 
 #include "AutoBM.h"
 #include "Modules/ModuleManager.h"
