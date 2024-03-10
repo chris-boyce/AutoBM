@@ -6,24 +6,51 @@
 #include "GameFramework/Character.h"
 #include "FirstPersonPlayer.generated.h"
 
+
+class UCameraComponent;
 UCLASS()
 class AUTOBM_API AFirstPersonPlayer : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	AFirstPersonPlayer();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
+	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	virtual void Jump() override;
+
+	virtual void Crouch(bool bCilentSimulation = false) override;
+
+	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue = 1.0f, bool bForce = false) override;
+
+	UFUNCTION()
+	void AttachGun();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player|Movement", meta = (AllowPrivateAccess = "true"))
+	float NormalMaxWalkSpeed = 500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player|Movement", meta = (AllowPrivateAccess = "true"))
+	float RunningMaxWalkSpeed = 1000.0f;
+
+	UFUNCTION(BlueprintCallable, Category="Player|Movement")
+	void ToggleRunning();
+
+	UFUNCTION(BlueprintCallable, Category="Player|Movement")
+	void ToggleRunningOff();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player|Components")
+	UCameraComponent* CameraComponent;
+
+	bool bIsRunning = false;
+
+
+	
+	
 };

@@ -3,32 +3,72 @@
 
 #include "FirstPersonPlayer.h"
 
-// Sets default values
+#include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PawnMovementComponent.h"
+
 AFirstPersonPlayer::AFirstPersonPlayer()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
 
-// Called when the game starts or when spawned
 void AFirstPersonPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+	if(GetMovementComponent())
+	{
+		GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;
+	}
+	CameraComponent = FindComponentByClass<UCameraComponent>();
 	
 }
 
-// Called every frame
 void AFirstPersonPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-// Called to bind functionality to input
 void AFirstPersonPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
+
+void AFirstPersonPlayer::Jump()
+{
+	UnCrouch();
+	Super::Jump();
+}
+
+void AFirstPersonPlayer::Crouch(bool bCilentSimulation)
+{
+	Super::Crouch(bCilentSimulation);
+}
+
+void AFirstPersonPlayer::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
+{
+	Super::AddMovementInput(WorldDirection, ScaleValue, bForce);
+}
+
+void AFirstPersonPlayer::AttachGun()
+{
+	//Add Gun Attachment
+}
+
+void AFirstPersonPlayer::ToggleRunning()
+{
+	GetCharacterMovement()->MaxWalkSpeed = RunningMaxWalkSpeed;
+}
+
+void AFirstPersonPlayer::ToggleRunningOff()
+{
+	GetCharacterMovement()->MaxWalkSpeed = NormalMaxWalkSpeed;
+}
+
+
+
+
+
 
