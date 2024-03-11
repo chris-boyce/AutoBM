@@ -69,9 +69,14 @@ void AFirstPersonCharacterController::OnPossess(APawn* aPawn)
 	{
 		EnhancedInputComponent->BindAction(ActionInteract, ETriggerEvent::Triggered, this, &AFirstPersonCharacterController::HandleInteract);
 	}
-	if(ActionFire)
+	if(ActionFireDown)
 	{
-		EnhancedInputComponent->BindAction(ActionFire, ETriggerEvent::Triggered, this, &AFirstPersonCharacterController::HandleFire);
+		EnhancedInputComponent->BindAction(ActionFireDown, ETriggerEvent::Triggered, this, &AFirstPersonCharacterController::HandleFireDown);
+	}
+	if(ActionFireUp)
+	{
+		UE_LOG(LogTemp, Error, TEXT("KEYBound"));
+		EnhancedInputComponent->BindAction(ActionFireUp, ETriggerEvent::Triggered, this, &AFirstPersonCharacterController::HandleFireUp);
 	}
 	
 }
@@ -179,17 +184,22 @@ void AFirstPersonCharacterController::HandleInteract()
 	//}
 }
 
-void AFirstPersonCharacterController::HandleFire()
+void AFirstPersonCharacterController::HandleFireDown()
 {
 	if(!bPlayerCanMove)
 	{
 		return;
 	}
-	//if(PlayerCharacter->Pistol)
-	//{
-		//PlayerCharacter->Pistol->Fire();
-	//}
+	PlayerCharacter->Rifle->StartFiring();
 }
+
+void AFirstPersonCharacterController::HandleFireUp()
+{
+	UE_LOG(LogTemp, Error, TEXT("KEY REGISTERED"));
+	PlayerCharacter->Rifle->StopFiring();
+}
+
+
 
 
 

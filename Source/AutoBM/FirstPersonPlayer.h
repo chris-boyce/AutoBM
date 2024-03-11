@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Rifle.h"
 #include "GameFramework/Character.h"
 #include "FirstPersonPlayer.generated.h"
 
@@ -47,6 +48,12 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player|Components")
 	UCameraComponent* CameraComponent;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ARifle> RifleClass;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ARifle* Rifle = nullptr;
 
 	bool bIsRunning = false;
 

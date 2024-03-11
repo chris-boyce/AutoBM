@@ -16,6 +16,18 @@ AFirstPersonPlayer::AFirstPersonPlayer()
 void AFirstPersonPlayer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (RifleClass)
+	{
+		Rifle = GetWorld()->SpawnActor<ARifle>(RifleClass, FVector::ZeroVector, FRotator::ZeroRotator);
+
+		if (Rifle)
+		{
+			FName SocketName = TEXT("r_socket"); 
+			Rifle->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+		}
+	}
+	
 	if(GetMovementComponent())
 	{
 		GetMovementComponent()->GetNavAgentPropertiesRef().bCanCrouch = true;

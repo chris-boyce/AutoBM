@@ -33,6 +33,7 @@ private:
 	float FireRate = 0.2f;
 
 	TArray<FVector2D> SprayPattern;
+	
 	int CurrentPatternIndex = 0;
 
 	float MaxWalkingInaccuracy = 10.0f; 

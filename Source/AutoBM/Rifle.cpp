@@ -9,36 +9,17 @@ ARifle::ARifle()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SprayPattern = {
-		FVector2D(0, 1),     // Start moving up
-		FVector2D(0, 1.2),
-		FVector2D(0.3, 1.2), // Start moving right
-		FVector2D(0.6, 1.1),
-		FVector2D(0.9, 1),   // More to the right
-		FVector2D(-0.5, 1),  // Sharp left
-		FVector2D(-0.7, 1),
-		FVector2D(-0.4, 0.9),// Start tapering off left
-		FVector2D(-0.2, 0.8),
-		FVector2D(0.1, 0.7), // Slight right
-		FVector2D(0.2, 0.7),
-		FVector2D(0.3, 0.6), // More right
-		FVector2D(0.1, 0.6), // Less right
-		FVector2D(-0.1, 0.6),// Tiny left
-		FVector2D(0, 0.5),   // Straight up
-		FVector2D(0.2, 0.4), // Slight right
-		FVector2D(-0.2, 0.4),// Slight left
-		FVector2D(0.2, 0.3), // Back to right
-		FVector2D(-0.2, 0.3),// Back to left
-		FVector2D(0.1, 0.3), // Less right
-		FVector2D(-0.1, 0.3),// Less left
-		FVector2D(0, 0.3),   // Tiny up
-		FVector2D(0.1, 0.2), // Slight right
-		FVector2D(-0.1, 0.2),// Slight left
-		FVector2D(0.1, 0.2), // Slight right
-		FVector2D(-0.1, 0.2),// Slight left
-		FVector2D(0, 0.2),   // Tiny up
-		FVector2D(0.1, 0.1), // Slight right
-		FVector2D(-0.1, 0.1),// Slight left
-		FVector2D(0, 0.1),   // End with tiny up
+		FVector2D(0, 0),     // Start moving up
+		FVector2D(0, 2.2),
+		FVector2D(0.3, 4.5), // Start moving right
+		FVector2D(0.6, 5),
+		FVector2D(0.9, 6),   // More to the right
+		FVector2D(-0.5, 7),  // Sharp left
+		FVector2D(-0.7, 8),
+		FVector2D(-0.4, 9),// Start tapering off left
+		FVector2D(-0.2, 10),
+		FVector2D(0.1, 11), // Slight right
+		FVector2D(0.2, 12),
 	};
 
 }
@@ -68,7 +49,7 @@ void ARifle::StopFiring()
 
 void ARifle::FireWeapon()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Firing Weapon"));
+	UE_LOG(LogTemp, Warning, TEXT("THIS IS RUNNING"));
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (!PlayerController) return;
 
@@ -99,7 +80,6 @@ void ARifle::FireWeapon()
 
 	if (bHit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HIT ENEMY"));
 		AActor* HitActor = HitResult.GetActor();
 		if (HitActor)
 		{
@@ -114,23 +94,23 @@ void ARifle::FireWeapon()
 
 FVector ARifle::ApplySprayPattern(FVector OriginalDirection)
 {
-	if (SprayPattern.Num() == 0) return OriginalDirection;
-
 	FVector2D Pattern = SprayPattern[CurrentPatternIndex];
-	CurrentPatternIndex = (CurrentPatternIndex + 1) % SprayPattern.Num();
+	CurrentPatternIndex = CurrentPatternIndex + 1;
 
 	FRotator DirectionRotator = OriginalDirection.Rotation();
 	DirectionRotator.Yaw += Pattern.X;
 	DirectionRotator.Pitch += Pattern.Y;
 
-	return DirectionRotator.Vector();
+	FVector NewDirection = DirectionRotator.Vector();
+	
+	UE_LOG(LogTemp, Warning, TEXT("New Direction Vector: X=%f, Y=%f, Z=%f"), NewDirection.X, NewDirection.Y, NewDirection.Z);
+
+	return NewDirection;
 }
 
 FVector ARifle::ApplyInaccuracy(FVector Direction, float Speed)
 {
-	if (Speed <= 0) return Direction;
-
-	float InaccuracyAmount = FMath::Min(Speed / 1000, 1.0f) * MaxWalkingInaccuracy; 
+	float InaccuracyAmount = 0;
 
 	float InaccuracyYaw = FMath::RandRange(-InaccuracyAmount, InaccuracyAmount);
 	float InaccuracyPitch = FMath::RandRange(-InaccuracyAmount, InaccuracyAmount);
@@ -139,6 +119,10 @@ FVector ARifle::ApplyInaccuracy(FVector Direction, float Speed)
 	DirectionRotator.Yaw += InaccuracyYaw;
 	DirectionRotator.Pitch += InaccuracyPitch;
 
-	return DirectionRotator.Vector();
+	FVector NewDirection = DirectionRotator.Vector();
+	
+	//UE_LOG(LogTemp, Warning, TEXT("New Direction Vector: X=%f, Y=%f, Z=%f"), NewDirection.X, NewDirection.Y, NewDirection.Z);
+
+	return NewDirection;
 }
 
