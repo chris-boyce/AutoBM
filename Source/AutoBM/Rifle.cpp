@@ -3,7 +3,9 @@
 
 #include "Rifle.h"
 
+#include "Components/DecalComponent.h"
 #include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
 
 ARifle::ARifle()
 {
@@ -45,10 +47,12 @@ void ARifle::StartFiring()
 void ARifle::StopFiring()
 {
 	GetWorld()->GetTimerManager().ClearTimer(AutomaticFireTimer);
+	CurrentPatternIndex = 0;
 }
 
 void ARifle::FireWeapon()
 {
+	WeaponFired.Broadcast();
 	UE_LOG(LogTemp, Warning, TEXT("THIS IS RUNNING"));
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (!PlayerController) return;
@@ -80,6 +84,8 @@ void ARifle::FireWeapon()
 
 	if (bHit)
 	{
+		SpawnDecalAtLocation(HitResult.ImpactPoint, HitResult.ImpactNormal);
+		UE_LOG(LogTemp, Warning, TEXT("HAS HIT AN OBJECT"));
 		AActor* HitActor = HitResult.GetActor();
 		if (HitActor)
 		{
@@ -94,6 +100,10 @@ void ARifle::FireWeapon()
 
 FVector ARifle::ApplySprayPattern(FVector OriginalDirection)
 {
+	if(CurrentPatternIndex > 10)
+	{
+		return OriginalDirection;
+	}
 	FVector2D Pattern = SprayPattern[CurrentPatternIndex];
 	CurrentPatternIndex = CurrentPatternIndex + 1;
 
@@ -124,5 +134,20 @@ FVector ARifle::ApplyInaccuracy(FVector Direction, float Speed)
 	//UE_LOG(LogTemp, Warning, TEXT("New Direction Vector: X=%f, Y=%f, Z=%f"), NewDirection.X, NewDirection.Y, NewDirection.Z);
 
 	return NewDirection;
+}
+
+void ARifle::SpawnDecalAtLocation(FVector& Location, FVector& Normal)
+{
+	if (BulletDecalMaterial)
+	{
+		UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), BulletDecalMaterial, FVector(10.0f, 10.0f, 10.0f), Location, Normal.Rotation());
+		if (Decal)
+		{
+			// Set fade start and end parameters to control the visibility distance of the decal
+			Decal->FadeScreenSize = 0.01f; // Start fading when the decal size reaches 1% of the screen size
+			Decal->FadeStartDelay = 3.0f; // Delay before fading starts (in seconds)
+			Decal->FadeDuration = 5.0f; // Duration of the fade (in seconds)
+		}
+	}
 }
 

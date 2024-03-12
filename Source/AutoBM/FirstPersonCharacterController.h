@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
 #include "FirstPersonCharacterController.generated.h"
 
@@ -55,6 +56,15 @@ public:
 
 	UFUNCTION()
 	void MouseVisibility(bool bIsVisable);
+
+	UFUNCTION()
+	void AddCrosshair();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widgets")
+	TSubclassOf<UUserWidget> CrosshairWidgetClass;
+
+	UPROPERTY()
+	UUserWidget* CrosshairWidgetInstance;
 
 protected:
 	virtual void OnPossess(APawn* aPawn) override;

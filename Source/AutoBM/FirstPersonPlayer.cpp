@@ -43,6 +43,7 @@ void AFirstPersonPlayer::BeginPlay()
 		{
 			FName SocketName = TEXT("r_socket"); 
 			Rifle->AttachToComponent(Mesh1P, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+			Rifle->WeaponFired.AddDynamic(this, &AFirstPersonPlayer::GunFired);
 		}
 	}
 	
@@ -95,6 +96,12 @@ void AFirstPersonPlayer::ToggleRunning()
 void AFirstPersonPlayer::ToggleRunningOff()
 {
 	GetCharacterMovement()->MaxWalkSpeed = NormalMaxWalkSpeed;
+}
+
+void AFirstPersonPlayer::GunFired()
+{
+	UE_LOG(LogTemp, Warning, TEXT("PLAYER HAS RECIEVED THIS"));
+	Mesh1P->PlayAnimation(FireGun, false);
 }
 
 

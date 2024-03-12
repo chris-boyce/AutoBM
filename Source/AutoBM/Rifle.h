@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Rifle.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponFired);
+
 UCLASS()
 class AUTOBM_API ARifle : public AActor
 {
@@ -22,6 +24,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void StartFiring();
 	void StopFiring();
+
+	FWeaponFired WeaponFired;
 private:
 	
 	void FireWeapon();
@@ -36,6 +40,14 @@ private:
 	
 	int CurrentPatternIndex = 0;
 
-	float MaxWalkingInaccuracy = 10.0f; 
+	float MaxWalkingInaccuracy = 10.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Decal")
+	UMaterialInterface* BulletDecalMaterial;
+	
+	UFUNCTION()
+	void SpawnDecalAtLocation(FVector& Location, FVector& Normal);
+
+	
 
 };

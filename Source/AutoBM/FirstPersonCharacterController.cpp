@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "FirstPersonPlayer.h"
 
+
 void AFirstPersonCharacterController::MouseVisibility(bool bIsVisable)
 {
 	if (bIsVisable)
@@ -20,6 +21,19 @@ void AFirstPersonCharacterController::MouseVisibility(bool bIsVisable)
 		SetInputMode(FInputModeGameOnly());
 	}
 }
+
+void AFirstPersonCharacterController::AddCrosshair()
+{
+	if (CrosshairWidgetClass)
+	{
+		CrosshairWidgetInstance = CreateWidget<UUserWidget>(GetWorld(), CrosshairWidgetClass);
+		if (CrosshairWidgetInstance)
+		{
+			CrosshairWidgetInstance->AddToViewport();
+		}
+	}
+}
+
 void AFirstPersonCharacterController::AllowInput(bool bAllowMove)
 {
 	bPlayerCanMove = bAllowMove;
@@ -29,7 +43,9 @@ void AFirstPersonCharacterController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
 	PlayerCharacter = Cast<AFirstPersonPlayer>(aPawn);
-
+	
+	AddCrosshair();
+	
 	EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
 	
 	UEnhancedInputLocalPlayerSubsystem* InputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());

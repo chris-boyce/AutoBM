@@ -32,6 +32,9 @@ public:
 	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue = 1.0f, bool bForce = false) override;
 
 	UFUNCTION()
+	void GunFired();
+	
+	UFUNCTION()
 	void AttachGun();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player|Movement", meta = (AllowPrivateAccess = "true"))
@@ -64,7 +67,13 @@ public:
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
+	
+	UPROPERTY(EditAnywhere)
+	UAnimationAsset* FireGun;
+	
 
 	
 	
 };
+
+
