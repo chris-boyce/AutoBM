@@ -4,6 +4,7 @@
 #include "Rifle.h"
 
 #include "Components/DecalComponent.h"
+#include "FirstPersonPlayer.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -120,7 +121,11 @@ FVector ARifle::ApplySprayPattern(FVector OriginalDirection)
 
 FVector ARifle::ApplyInaccuracy(FVector Direction, float Speed)
 {
-	float InaccuracyAmount = 0;
+	float PlayerSpeed = Player->GetMovementSpeed();
+	
+	float ClampedSpeed = FMath::Clamp(PlayerSpeed, 0.0f, 10.0f);
+	
+	float InaccuracyAmount = ClampedSpeed;
 
 	float InaccuracyYaw = FMath::RandRange(-InaccuracyAmount, InaccuracyAmount);
 	float InaccuracyPitch = FMath::RandRange(-InaccuracyAmount, InaccuracyAmount);
@@ -141,13 +146,10 @@ void ARifle::SpawnDecalAtLocation(FVector& Location, FVector& Normal)
 	if (BulletDecalMaterial)
 	{
 		UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), BulletDecalMaterial, FVector(10.0f, 10.0f, 10.0f), Location, Normal.Rotation());
-		if (Decal)
-		{
-			// Set fade start and end parameters to control the visibility distance of the decal
-			Decal->FadeScreenSize = 0.01f; // Start fading when the decal size reaches 1% of the screen size
-			Decal->FadeStartDelay = 3.0f; // Delay before fading starts (in seconds)
-			Decal->FadeDuration = 5.0f; // Duration of the fade (in seconds)
-		}
+		// Set fade start and end parameters to control the visibility distance of the decal
+		Decal->SetFadeScreenSize(0.001f); // Start fading when the decal size reaches 1% of the screen size
+		UE_LOG(LogTemp, Warning, TEXT("DEcal"));
+		
 	}
 }
 

@@ -7,7 +7,7 @@
 #include "Rifle.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponFired);
-
+class AFirstPersonPlayer;
 UCLASS()
 class AUTOBM_API ARifle : public AActor
 {
@@ -26,6 +26,8 @@ public:
 	void StopFiring();
 
 	FWeaponFired WeaponFired;
+
+	AFirstPersonPlayer* Player = nullptr;
 private:
 	
 	void FireWeapon();

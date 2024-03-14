@@ -3,11 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Rifle.h"
 #include "GameFramework/Character.h"
 #include "FirstPersonPlayer.generated.h"
 
-
+class ARifle;
 class UCameraComponent;
 UCLASS()
 class AUTOBM_API AFirstPersonPlayer : public ACharacter
@@ -57,19 +56,39 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ARifle* Rifle = nullptr;
-
-	bool bIsRunning = false;
 	
-	/** Pawn mesh: 1st person view (arms; seen only by self) */
 	UPROPERTY(VisibleDefaultsOnly, Category=Mesh)
 	USkeletalMeshComponent* Mesh1P;
-
-	/** First person camera */
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
 	
 	UPROPERTY(EditAnywhere)
 	UAnimationAsset* FireGun;
+
+	UFUNCTION()
+	float GetMovementSpeed();
+
+	UPROPERTY(EditAnywhere, Category="PlayerMovements")
+	UCharacterMovementComponent* CharacterMovementComp;
+
+	UFUNCTION()
+	void CameraBob();
+
+	UPROPERTY(EditAnywhere, Category="CameraBob")
+	bool bIsWalking = true;
+
+	UPROPERTY(EditAnywhere, Category="CameraBob")
+	float BobbingSpeed = 5;
+	
+	UPROPERTY(EditAnywhere, Category="CameraBob")
+	float BobbingIntensity = 15;
+	
+	UPROPERTY()
+	FVector OriginalCameraOffset;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UCameraShakeBase> FiringGun;
 	
 
 	

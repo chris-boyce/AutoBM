@@ -5,6 +5,7 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Rifle.h"
 #include "FirstPersonPlayer.h"
 
 

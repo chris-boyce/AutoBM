@@ -4,6 +4,7 @@
 #include "FirstPersonPlayer.h"
 
 #include "Camera/CameraComponent.h"
+#include "Rifle.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
@@ -26,7 +27,6 @@ AFirstPersonPlayer::AFirstPersonPlayer()
 	Mesh1P->SetupAttachment(FirstPersonCameraComponent);
 	Mesh1P->bCastDynamicShadow = false;
 	Mesh1P->CastShadow = false;
-	//Mesh1P->SetRelativeRotation(FRotator(0.9f, -19.19f, 5.2f));
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
 
 }
@@ -35,13 +35,16 @@ void AFirstPersonPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	CharacterMovementComp = GetCharacterMovement();
+	
 	if (RifleClass)
 	{
 		Rifle = GetWorld()->SpawnActor<ARifle>(RifleClass, FVector::ZeroVector, FRotator::ZeroRotator);
 
 		if (Rifle)
 		{
-			FName SocketName = TEXT("r_socket"); 
+			FName SocketName = TEXT("r_socket");
+			Rifle->Player = this;
 			Rifle->AttachToComponent(Mesh1P, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
 			Rifle->WeaponFired.AddDynamic(this, &AFirstPersonPlayer::GunFired);
 		}
@@ -58,7 +61,7 @@ void AFirstPersonPlayer::BeginPlay()
 void AFirstPersonPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	CameraBob();
 }
 
 void AFirstPersonPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -98,10 +101,48 @@ void AFirstPersonPlayer::ToggleRunningOff()
 	GetCharacterMovement()->MaxWalkSpeed = NormalMaxWalkSpeed;
 }
 
+float AFirstPersonPlayer::GetMovementSpeed()
+{
+	if (CharacterMovementComp != nullptr)
+	{
+		return CharacterMovementComp->Velocity.Size();
+	}
+	
+	return 0.0f;
+}
+
+void AFirstPersonPlayer::CameraBob()
+{
+	bIsWalking = (GetMovementSpeed() > 10);
+	OriginalCameraOffset = bIsWalking ? FVector::ZeroVector : OriginalCameraOffset;
+	if (bIsWalking)
+	{
+		FVector CameraOffset = FVector(0.0f, 0.0f, 0.0f); 
+		float BobbingAmount = FMath::Sin(GetWorld()->GetTimeSeconds() * BobbingSpeed) * BobbingIntensity;
+		CameraOffset.Z += BobbingAmount;
+		if (CameraComponent)
+		{
+			CameraComponent->SetRelativeLocation(CameraOffset);
+		}
+	}
+	else
+	{
+		if (CameraComponent)
+		{
+			float ResetInterpSpeed = 1.0f;
+			FVector CurrentCameraOffset = CameraComponent->GetRelativeLocation();
+			FVector NewCameraOffset = FMath::VInterpTo(CurrentCameraOffset, OriginalCameraOffset, GetWorld()->GetDeltaSeconds(), ResetInterpSpeed);
+			CameraComponent->SetRelativeLocation(NewCameraOffset);
+		}
+	}
+	
+}
+
 void AFirstPersonPlayer::GunFired()
 {
-	UE_LOG(LogTemp, Warning, TEXT("PLAYER HAS RECIEVED THIS"));
 	Mesh1P->PlayAnimation(FireGun, false);
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	PlayerController->ClientStartCameraShake(FiringGun, 10);
 }
 
 
