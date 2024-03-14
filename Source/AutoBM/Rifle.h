@@ -18,6 +18,7 @@ struct FSprayPatternData : public FTableRowBase
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponFired); //Binds to Gun for anim calls
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponReload);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponUpdateAmmoHUD, int, CO, int, FO);
 
 class UNiagaraComponent;
 class ATracer;
@@ -42,6 +43,9 @@ public:
 	
 	FWeaponFired WeaponFired; //Anim Event To First Person Player
 	FWeaponReload WeaponReload;
+	
+	UPROPERTY()
+	FWeaponUpdateAmmoHUD WeaponUpdateAmmoHUD;
 
 	AFirstPersonPlayer* Player = nullptr; //Player Reference Set in Player
 

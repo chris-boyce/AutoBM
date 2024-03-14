@@ -142,6 +142,8 @@ void ARifle::FireWeapon()
 	
 	Tracers();
 	MuzzleFlash();
+
+	WeaponUpdateAmmoHUD.Broadcast(CurrentAmmo,FullAmmo);
 	
 	//DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 1.0f, 0, 1.0f);
 }
@@ -192,6 +194,7 @@ void ARifle::RefillAmmo()
 {
 	CurrentAmmo = FullAmmo;
 	bIsReloading = false;
+	WeaponUpdateAmmoHUD.Broadcast(CurrentAmmo,FullAmmo);
 	UE_LOG(LogTemp, Warning, TEXT("RELOAD FINISHED"));
 }
 

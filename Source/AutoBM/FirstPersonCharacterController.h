@@ -7,6 +7,7 @@
 #include "GameFramework/PlayerController.h"
 #include "FirstPersonCharacterController.generated.h"
 
+class UFirstPersonWidget;
 struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
@@ -61,16 +62,24 @@ public:
 	void MouseVisibility(bool bIsVisable);
 
 	UFUNCTION()
-	void AddCrosshair();
+	void AddHUD();
+	
+	UPROPERTY()
+	AFirstPersonPlayer* PlayerCharacter = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Widgets")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD")
 	TSubclassOf<UUserWidget> CrosshairWidgetClass;
 
 	UPROPERTY()
 	UUserWidget* CrosshairWidgetInstance;
 	
 	UPROPERTY()
-	AFirstPersonPlayer* PlayerCharacter = nullptr;
+	UFirstPersonWidget* FirstPersonHUD;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD")
+	TSubclassOf<UUserWidget> FirstPersonHUDClass;
+
+	virtual void BeginPlay() override;
 	
 protected:
 	virtual void OnPossess(APawn* aPawn) override;
@@ -88,8 +97,8 @@ protected:
 	void HandleFireUp();
 	void HandleReload();
 
-	
-	
+	void AddBinds();
+
 private:
     UPROPERTY()
     UEnhancedInputComponent* EnhancedInputComponent = nullptr;

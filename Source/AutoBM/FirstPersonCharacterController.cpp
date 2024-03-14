@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Rifle.h"
 #include "FirstPersonPlayer.h"
+#include "FirstPersonWidget.h"
 
 
 void AFirstPersonCharacterController::MouseVisibility(bool bIsVisable)
@@ -23,7 +24,7 @@ void AFirstPersonCharacterController::MouseVisibility(bool bIsVisable)
 	}
 }
 
-void AFirstPersonCharacterController::AddCrosshair()
+void AFirstPersonCharacterController::AddHUD()
 {
 	if (CrosshairWidgetClass)
 	{
@@ -33,6 +34,17 @@ void AFirstPersonCharacterController::AddCrosshair()
 			CrosshairWidgetInstance->AddToViewport();
 		}
 	}
+	if(FirstPersonHUDClass)
+	{
+		FirstPersonHUD = CreateWidget<UFirstPersonWidget>(GetWorld(), FirstPersonHUDClass);
+		if (FirstPersonHUD)
+		{
+			FirstPersonHUD->AddToViewport();
+		}
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Bind HUD"));
+	
+	
 }
 
 void AFirstPersonCharacterController::AllowInput(bool bAllowMove)
@@ -40,12 +52,20 @@ void AFirstPersonCharacterController::AllowInput(bool bAllowMove)
 	bPlayerCanMove = bAllowMove;
 }
 
+
+void AFirstPersonCharacterController::BeginPlay()
+{
+	Super::BeginPlay();
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AFirstPersonCharacterController::AddBinds, 0.1f, false);
+}
+
 void AFirstPersonCharacterController::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
 	PlayerCharacter = Cast<AFirstPersonPlayer>(aPawn);
 	
-	AddCrosshair();
+	AddHUD();
 	
 	EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
 	
@@ -226,6 +246,21 @@ void AFirstPersonCharacterController::HandleReload()
 	}
 	PlayerCharacter->Rifle->Reload();
 	UE_LOG(LogTemp, Warning, TEXT("REload Button Hit"));
+
+	
+	
+}
+
+void AFirstPersonCharacterController::AddBinds()
+{
+	if(PlayerCharacter->Rifle)
+	{
+		PlayerCharacter->Rifle->WeaponUpdateAmmoHUD.AddDynamic(FirstPersonHUD, &UFirstPersonWidget::UpdateAmmo);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Rifle Not Found"));
+	}
 }
 
 
