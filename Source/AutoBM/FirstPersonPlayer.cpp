@@ -47,6 +47,7 @@ void AFirstPersonPlayer::BeginPlay()
 			Rifle->Player = this;
 			Rifle->AttachToComponent(Mesh1P, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
 			Rifle->WeaponFired.AddDynamic(this, &AFirstPersonPlayer::GunFired);
+			Rifle->WeaponReload.AddDynamic(this, &AFirstPersonPlayer::WeaponReload);
 		}
 	}
 	
@@ -138,9 +139,15 @@ void AFirstPersonPlayer::CameraBob()
 	
 }
 
+void AFirstPersonPlayer::WeaponReload()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player Reload"));
+	Mesh1P->PlayAnimation(ReloadGunAnim, false);
+}
+
 void AFirstPersonPlayer::GunFired()
 {
-	Mesh1P->PlayAnimation(FireGun, false);
+	Mesh1P->PlayAnimation(FireGunAnim, false);
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	PlayerController->ClientStartCameraShake(FiringGun, 10);
 }

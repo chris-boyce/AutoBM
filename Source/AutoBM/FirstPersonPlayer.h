@@ -64,7 +64,10 @@ public:
 	UCameraComponent* FirstPersonCameraComponent;
 	
 	UPROPERTY(EditAnywhere)
-	UAnimationAsset* FireGun;
+	UAnimationAsset* FireGunAnim;
+
+	UPROPERTY(EditAnywhere)
+	UAnimationAsset* ReloadGunAnim;
 
 	UFUNCTION()
 	float GetMovementSpeed();
@@ -79,16 +82,19 @@ public:
 	bool bIsWalking = true;
 
 	UPROPERTY(EditAnywhere, Category="CameraBob")
-	float BobbingSpeed = 5;
+	float BobbingSpeed = 10;
 	
 	UPROPERTY(EditAnywhere, Category="CameraBob")
-	float BobbingIntensity = 15;
+	float BobbingIntensity = 7.5f;
 	
 	UPROPERTY()
 	FVector OriginalCameraOffset;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UCameraShakeBase> FiringGun;
+
+	UFUNCTION()
+	void WeaponReload();
 	
 
 	

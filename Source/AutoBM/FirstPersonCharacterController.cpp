@@ -92,8 +92,11 @@ void AFirstPersonCharacterController::OnPossess(APawn* aPawn)
 	}
 	if(ActionFireUp)
 	{
-		UE_LOG(LogTemp, Error, TEXT("KEYBound"));
 		EnhancedInputComponent->BindAction(ActionFireUp, ETriggerEvent::Triggered, this, &AFirstPersonCharacterController::HandleFireUp);
+	}
+	if(ActionReload)
+	{
+		EnhancedInputComponent->BindAction(ActionReload, ETriggerEvent::Triggered, this, &AFirstPersonCharacterController::HandleReload);
 	}
 	
 }
@@ -212,8 +215,17 @@ void AFirstPersonCharacterController::HandleFireDown()
 
 void AFirstPersonCharacterController::HandleFireUp()
 {
-	UE_LOG(LogTemp, Error, TEXT("KEY REGISTERED"));
 	PlayerCharacter->Rifle->StopFiring();
+}
+
+void AFirstPersonCharacterController::HandleReload()
+{
+	if(!bPlayerCanMove)
+	{
+		return;
+	}
+	PlayerCharacter->Rifle->Reload();
+	UE_LOG(LogTemp, Warning, TEXT("REload Button Hit"));
 }
 
 

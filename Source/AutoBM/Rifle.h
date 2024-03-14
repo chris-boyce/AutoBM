@@ -7,6 +7,7 @@
 #include "Rifle.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponFired);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponReload);
 class AFirstPersonPlayer;
 UCLASS()
 class AUTOBM_API ARifle : public AActor
@@ -24,15 +25,24 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	void StartFiring();
 	void StopFiring();
+	void Reload();
+
+	UPROPERTY()
+	float RunningOffsetDegreeClamp = 10.0f;
 
 	FWeaponFired WeaponFired;
+
+	FWeaponReload WeaponReload;
 
 	AFirstPersonPlayer* Player = nullptr;
 private:
 	
 	void FireWeapon();
+	
 	FVector ApplySprayPattern(FVector OriginalDirection);
 	FVector ApplyInaccuracy(FVector Direction, float Speed);
+	
+	
 
 	FTimerHandle AutomaticFireTimer;
 	
@@ -49,6 +59,17 @@ private:
 	
 	UFUNCTION()
 	void SpawnDecalAtLocation(FVector& Location, FVector& Normal);
+
+	UPROPERTY()
+	int FullAmmo = 30;
+
+	UPROPERTY()
+	int CurrentAmmo = 30;
+
+	
+
+	
+	
 
 	
 

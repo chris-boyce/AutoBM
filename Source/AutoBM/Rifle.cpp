@@ -90,7 +90,7 @@ void ARifle::FireWeapon()
 		AActor* HitActor = HitResult.GetActor();
 		if (HitActor)
 		{
-			
+			//When Hit Actor
 		}
 		
 	}
@@ -122,11 +122,8 @@ FVector ARifle::ApplySprayPattern(FVector OriginalDirection)
 FVector ARifle::ApplyInaccuracy(FVector Direction, float Speed)
 {
 	float PlayerSpeed = Player->GetMovementSpeed();
-	
-	float ClampedSpeed = FMath::Clamp(PlayerSpeed, 0.0f, 10.0f);
-	
+	float ClampedSpeed = FMath::Clamp(PlayerSpeed, 0.0f, RunningOffsetDegreeClamp);
 	float InaccuracyAmount = ClampedSpeed;
-
 	float InaccuracyYaw = FMath::RandRange(-InaccuracyAmount, InaccuracyAmount);
 	float InaccuracyPitch = FMath::RandRange(-InaccuracyAmount, InaccuracyAmount);
 
@@ -136,8 +133,6 @@ FVector ARifle::ApplyInaccuracy(FVector Direction, float Speed)
 
 	FVector NewDirection = DirectionRotator.Vector();
 	
-	//UE_LOG(LogTemp, Warning, TEXT("New Direction Vector: X=%f, Y=%f, Z=%f"), NewDirection.X, NewDirection.Y, NewDirection.Z);
-
 	return NewDirection;
 }
 
@@ -146,10 +141,14 @@ void ARifle::SpawnDecalAtLocation(FVector& Location, FVector& Normal)
 	if (BulletDecalMaterial)
 	{
 		UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), BulletDecalMaterial, FVector(10.0f, 10.0f, 10.0f), Location, Normal.Rotation());
-		// Set fade start and end parameters to control the visibility distance of the decal
-		Decal->SetFadeScreenSize(0.001f); // Start fading when the decal size reaches 1% of the screen size
-		UE_LOG(LogTemp, Warning, TEXT("DEcal"));
-		
+		Decal->SetFadeScreenSize(0.001f); 
 	}
+}
+
+void ARifle::Reload()
+{
+	CurrentAmmo = FullAmmo;
+	WeaponReload.Broadcast();
+	UE_LOG(LogTemp, Warning, TEXT("Gun Reloaded Done"));
 }
 

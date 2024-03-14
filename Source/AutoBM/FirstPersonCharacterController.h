@@ -51,6 +51,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="First Person Player|Character Movement")
 	TObjectPtr<UInputAction> ActionFireUp;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="First Person Player|Character Movement")
+	TObjectPtr<UInputAction> ActionReload;
+
 	UFUNCTION()
 	void AllowInput(bool bAllowMove);
 
@@ -80,6 +83,7 @@ protected:
 	void HandleInteract();
 	void HandleFireDown();
 	void HandleFireUp();
+	void HandleReload();
 
 
 private:
