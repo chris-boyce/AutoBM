@@ -6,8 +6,21 @@
 #include "GameFramework/Actor.h"
 #include "Rifle.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponFired);
+class UPointLightComponent;
+USTRUCT(BlueprintType) //Spray Pattern Struct For Data Table
+struct FSprayPatternData : public FTableRowBase
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FVector2D SpreadFactor;
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponFired); //Binds to Gun for anim calls
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponReload);
+
+class UNiagaraComponent;
+class ATracer;
 class AFirstPersonPlayer;
 UCLASS()
 class AUTOBM_API ARifle : public AActor
@@ -19,52 +32,101 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
 public:
 	
 	virtual void Tick(float DeltaTime) override;
-	void StartFiring();
-	void StopFiring();
-	void Reload();
-
-	UPROPERTY()
-	float RunningOffsetDegreeClamp = 10.0f;
-
-	FWeaponFired WeaponFired;
-
+	
+	void StartFiring(); //Mouse Down
+	void StopFiring(); //Mouse Up
+	void Reload(); //R Key
+	
+	FWeaponFired WeaponFired; //Anim Event To First Person Player
 	FWeaponReload WeaponReload;
 
-	AFirstPersonPlayer* Player = nullptr;
+	AFirstPersonPlayer* Player = nullptr; //Player Reference Set in Player
+
+	
+
+	
 private:
 	
 	void FireWeapon();
 	
-	FVector ApplySprayPattern(FVector OriginalDirection);
+	FVector ApplySprayPattern(FVector OriginalDirection); //Math Offsets for spray and accuarcy 
 	FVector ApplyInaccuracy(FVector Direction, float Speed);
 	
+	FTimerHandle AutomaticFireTimer; 
 	
-
-	FTimerHandle AutomaticFireTimer;
+	float FireRate = 0.1f; 
 	
-	float FireRate = 0.2f;
+	int CurrentPatternIndex = 0; //Current spray number resets on stop fire
 
-	TArray<FVector2D> SprayPattern;
-	
-	int CurrentPatternIndex = 0;
+	float MaxWalkingInaccuracy = 10.0f; //TBD Speed before inaccurays
 
-	float MaxWalkingInaccuracy = 10.0f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Decal")
+	UPROPERTY(EditDefaultsOnly, Category = "Bullet") //Decals and Tracers
 	UMaterialInterface* BulletDecalMaterial;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
+	TSubclassOf<ATracer> BulletClass;
 	
 	UFUNCTION()
 	void SpawnDecalAtLocation(FVector& Location, FVector& Normal);
 
-	UPROPERTY()
+	
+	UPROPERTY() //Ammo and Reload Properties 
 	int FullAmmo = 30;
-
+	
 	UPROPERTY()
 	int CurrentAmmo = 30;
+	
+	UFUNCTION()
+	void RefillAmmo();
+	
+	UPROPERTY()
+	float WeaponReloadTime = 2.0f;
+	
+	UPROPERTY()
+	bool bIsReloading = false;
+
+	UPROPERTY()
+	float RunningOffsetDegreeClamp = 10.0f; //Spread Clamp Value
+	
+	//Player Controller for camera
+	UPROPERTY()
+	APlayerController* PlayerController = nullptr;
+
+	//Barrel Location for muzzle flash and tracer
+	UPROPERTY()
+	FVector BarrelLocation;
+
+	//End Pos for hit or endpos for not hit for tracer
+	UPROPERTY()
+	FVector TargetPosition;
+
+	//Spray Pattern Data Table Values Written to array
+	UPROPERTY(EditAnywhere)
+	UDataTable* SprayPatternDataTable;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FSprayPatternData> SprayPattern;
+	
+	//Unreal Memes Needs to do this for some reason
+	UNiagaraComponent* GetNiagaraComponentByName(FName ComponentName);
+
+	//Visuals
+	UFUNCTION()
+	void Tracers();
+
+	UFUNCTION()
+	void TurnOffMuzzleFlashLight();
+	
+	UFUNCTION()
+	void MuzzleFlash();
+
+	UPROPERTY(VisibleAnywhere) 
+	UNiagaraComponent* MuzzleFlashSystem;
+
+	UPointLightComponent* LightComponent;
 
 	
 

@@ -145,6 +145,8 @@ void AFirstPersonPlayer::WeaponReload()
 	Mesh1P->PlayAnimation(ReloadGunAnim, false);
 }
 
+
+
 void AFirstPersonPlayer::GunFired()
 {
 	Mesh1P->PlayAnimation(FireGunAnim, false);

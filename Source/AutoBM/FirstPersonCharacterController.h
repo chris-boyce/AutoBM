@@ -68,7 +68,10 @@ public:
 
 	UPROPERTY()
 	UUserWidget* CrosshairWidgetInstance;
-
+	
+	UPROPERTY()
+	AFirstPersonPlayer* PlayerCharacter = nullptr;
+	
 protected:
 	virtual void OnPossess(APawn* aPawn) override;
 	virtual void OnUnPossess() override;
@@ -85,13 +88,13 @@ protected:
 	void HandleFireUp();
 	void HandleReload();
 
-
+	
+	
 private:
     UPROPERTY()
     UEnhancedInputComponent* EnhancedInputComponent = nullptr;
     
-    UPROPERTY()
-    AFirstPersonPlayer* PlayerCharacter = nullptr;
+    
     
     UPROPERTY()
     bool bPlayerCanMove = true;

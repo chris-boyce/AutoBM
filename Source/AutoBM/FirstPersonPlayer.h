@@ -95,6 +95,9 @@ public:
 
 	UFUNCTION()
 	void WeaponReload();
+
+	
+
 	
 
 	

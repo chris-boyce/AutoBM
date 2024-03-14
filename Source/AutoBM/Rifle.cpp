@@ -5,37 +5,51 @@
 
 #include "Components/DecalComponent.h"
 #include "FirstPersonPlayer.h"
+#include "NiagaraComponent.h"
+#include "Tracer.h"
+#include "Components/PointLightComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
 ARifle::ARifle()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	SprayPattern = {
-		FVector2D(0, 0),     // Start moving up
-		FVector2D(0, 2.2),
-		FVector2D(0.3, 4.5), // Start moving right
-		FVector2D(0.6, 5),
-		FVector2D(0.9, 6),   // More to the right
-		FVector2D(-0.5, 7),  // Sharp left
-		FVector2D(-0.7, 8),
-		FVector2D(-0.4, 9),// Start tapering off left
-		FVector2D(-0.2, 10),
-		FVector2D(0.1, 11), // Slight right
-		FVector2D(0.2, 12),
-	};
 
 }
 
 void ARifle::BeginPlay()
 {
 	Super::BeginPlay();
+
+	MuzzleFlashSystem = GetNiagaraComponentByName("MuzzleSystem");
+	LightComponent= FindComponentByClass<UPointLightComponent>();
+	LightComponent->SetIntensity(0.0f);
+	
+	if (SprayPatternDataTable)
+	{
+		TArray<FName> RowNames = SprayPatternDataTable->GetRowNames();
+		
+		for (const FName& RowName : RowNames)
+		{
+			FSprayPatternData* RowData = SprayPatternDataTable->FindRow<FSprayPatternData>(RowName, TEXT(""));
+
+			if (RowData)
+			{
+				SprayPattern.Add(*RowData);
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("THIS IS NOT FOUND"));
+	}
 	
 }
 
 void ARifle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 
 }
 
@@ -51,27 +65,54 @@ void ARifle::StopFiring()
 	CurrentPatternIndex = 0;
 }
 
+
+
+void ARifle::MuzzleFlash()
+{
+	MuzzleFlashSystem->ActivateSystem(true);
+	LightComponent->SetIntensity(2000.0f); 
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ARifle::TurnOffMuzzleFlashLight, 0.25f, false);
+}
+
 void ARifle::FireWeapon()
 {
-	WeaponFired.Broadcast();
-	UE_LOG(LogTemp, Warning, TEXT("THIS IS RUNNING"));
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (!PlayerController) return;
+	if(bIsReloading) //Checks Player Reload
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Reloading Stopped"));
+		return;
+	}
+	
+	if (!PlayerController)//Checks Has Player Character
+	{
+		PlayerController = GetWorld()->GetFirstPlayerController();
+	}
+	
+	WeaponFired.Broadcast(); //Broadcast Anim To Player //FirstPersonPlayer
+	CurrentAmmo--;
 
-	FVector StartLocation;
+	if(CurrentAmmo == 0) //Check Ammo
+	{
+		Reload();
+	}
+	
+	FVector StartLocation; //Calculation for Firing Direction
 	FRotator StartRotation;
+	
 	PlayerController->GetPlayerViewPoint(StartLocation, StartRotation);
 
 	FVector FiringDirection = StartRotation.Vector();
-
-
+	
 	FiringDirection = ApplySprayPattern(FiringDirection);
-	float PlayerSpeed = 0.0f;
-	if (ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner()))
+	
+	
+	if(!Player->bIsCrouched) //If Player is not Crouch it will calculate inaccuracy 
 	{
-		PlayerSpeed = OwnerCharacter->GetVelocity().Size();
+		float PlayerSpeed = 0.0f;
+		PlayerSpeed = Player->GetVelocity().Size();
+		FiringDirection = ApplyInaccuracy(FiringDirection, PlayerSpeed);
 	}
-	FiringDirection = ApplyInaccuracy(FiringDirection, PlayerSpeed);
+	
 
 	FVector EndLocation = StartLocation + (FiringDirection * 10000); 
 	
@@ -86,7 +127,7 @@ void ARifle::FireWeapon()
 	if (bHit)
 	{
 		SpawnDecalAtLocation(HitResult.ImpactPoint, HitResult.ImpactNormal);
-		UE_LOG(LogTemp, Warning, TEXT("HAS HIT AN OBJECT"));
+		TargetPosition = HitResult.ImpactPoint;
 		AActor* HitActor = HitResult.GetActor();
 		if (HitActor)
 		{
@@ -94,18 +135,20 @@ void ARifle::FireWeapon()
 		}
 		
 	}
+	else
+	{
+		TargetPosition = EndLocation;
+	}
 	
-
-	DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 1.0f, 0, 1.0f);
+	Tracers();
+	MuzzleFlash();
+	
+	//DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 1.0f, 0, 1.0f);
 }
 
 FVector ARifle::ApplySprayPattern(FVector OriginalDirection)
 {
-	if(CurrentPatternIndex > 10)
-	{
-		return OriginalDirection;
-	}
-	FVector2D Pattern = SprayPattern[CurrentPatternIndex];
+	FVector2D Pattern = SprayPattern[CurrentPatternIndex].SpreadFactor;
 	CurrentPatternIndex = CurrentPatternIndex + 1;
 
 	FRotator DirectionRotator = OriginalDirection.Rotation();
@@ -145,10 +188,69 @@ void ARifle::SpawnDecalAtLocation(FVector& Location, FVector& Normal)
 	}
 }
 
-void ARifle::Reload()
+void ARifle::RefillAmmo()
 {
 	CurrentAmmo = FullAmmo;
+	bIsReloading = false;
+	UE_LOG(LogTemp, Warning, TEXT("RELOAD FINISHED"));
+}
+
+UNiagaraComponent* ARifle::GetNiagaraComponentByName(FName ComponentName)
+{
+	TArray<UActorComponent*> Components;
+	GetComponents(Components);
+
+	for (UActorComponent* Component : Components)
+	{
+		UNiagaraComponent* NiagaraComponent = Cast<UNiagaraComponent>(Component);
+		if (NiagaraComponent && NiagaraComponent->GetName() == ComponentName.ToString())
+		{
+			return NiagaraComponent;
+		}
+	}
+	return nullptr;
+}
+
+void ARifle::Tracers()
+{
+	USkeletalMeshComponent* Mesh = FindComponentByClass<USkeletalMeshComponent>();
+	if(Mesh->DoesSocketExist("Barrel"))
+	{
+		BarrelLocation = Mesh->GetSocketLocation("GunSocket");
+		UE_LOG(LogTemp, Warning, TEXT("Barrel Location Set"));
+		UE_LOG(LogTemp, Warning, TEXT("Barrel Location: %s"), *BarrelLocation.ToString());
+	}
+	
+	FVector Direction = (TargetPosition - BarrelLocation).GetSafeNormal();
+
+	UE_LOG(LogTemp, Warning, TEXT("Barrel Location: %s"), *BarrelLocation.ToString());
+	
+	ATracer* Projectile = GetWorld()->SpawnActor<ATracer>(BulletClass, BarrelLocation, Direction.Rotation());
+
+	if (Projectile)
+	{
+		Projectile->StartMovement(Direction);
+	}
+	
+	
+}
+
+void ARifle::TurnOffMuzzleFlashLight()
+{
+	LightComponent->SetIntensity(0.0f);
+}
+
+void ARifle::Reload()
+{
+	if(bIsReloading || CurrentAmmo == FullAmmo)
+	{
+		return;
+	}
+	FTimerHandle AmmoRefillTimerHandle;
+	bIsReloading = true;
 	WeaponReload.Broadcast();
-	UE_LOG(LogTemp, Warning, TEXT("Gun Reloaded Done"));
+	GetWorld()->GetTimerManager().SetTimer(AmmoRefillTimerHandle, this, &ARifle::RefillAmmo, WeaponReloadTime, false);
+	
+	
 }
 
