@@ -256,6 +256,7 @@ void AFirstPersonCharacterController::AddBinds()
 	if(PlayerCharacter->Rifle)
 	{
 		PlayerCharacter->Rifle->WeaponUpdateAmmoHUD.AddDynamic(FirstPersonHUD, &UFirstPersonWidget::UpdateAmmo);
+		PlayerCharacter->Rifle->WeaponUpdateReloadTime.AddDynamic(FirstPersonHUD, &UFirstPersonWidget::UpdateReloadBar);
 	}
 	else
 	{

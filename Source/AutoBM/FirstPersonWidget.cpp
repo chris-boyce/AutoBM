@@ -11,7 +11,6 @@ void UFirstPersonWidget::UpdateAmmo(int CurrentAmmoNum, int FullAmmoAmount)
 	
 	CurrentAmmo->SetText(FText::FromString(CurrentAmmoString));
 	FullAmmo->SetText(FText::FromString(FullAmmoString));
-	UpdateReloadBar(5.0f);
 }
 
 void UFirstPersonWidget::UpdateReloadBar(float ReloadTime)
@@ -26,7 +25,7 @@ void UFirstPersonWidget::UpdateReloadBar(float ReloadTime)
 		
 		int32 TotalUpdates = FMath::CeilToInt(ReloadTime / 0.1f);
 		
-		IncrementValue = 1.0f / TotalUpdates;
+		IncrementValue = 0.5f / TotalUpdates;
 		
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &UFirstPersonWidget::UpdateProgressBar, 0.05f, true, 0.0f);
 	}

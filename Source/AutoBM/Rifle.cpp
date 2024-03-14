@@ -245,11 +245,14 @@ void ARifle::TurnOffMuzzleFlashLight()
 
 void ARifle::Reload()
 {
+	
 	if(bIsReloading || CurrentAmmo == FullAmmo)
 	{
 		return;
 	}
+	
 	FTimerHandle AmmoRefillTimerHandle;
+	WeaponUpdateReloadTime.Broadcast(WeaponReloadTime);
 	bIsReloading = true;
 	WeaponReload.Broadcast();
 	GetWorld()->GetTimerManager().SetTimer(AmmoRefillTimerHandle, this, &ARifle::RefillAmmo, WeaponReloadTime, false);
