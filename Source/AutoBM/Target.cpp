@@ -3,32 +3,84 @@
 
 #include "Target.h"
 
-// Sets default values
+#include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
+
 ATarget::ATarget()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-}
-
-// Called when the game starts or when spawned
-void ATarget::BeginPlay()
-{
-	Super::BeginPlay();
+	SkeletalMeshComponent = GetMesh();
+	
+	
 	
 }
 
-// Called every frame
+void ATarget::BeginPlay()
+{
+	Super::BeginPlay();
+	HeadCollision = FindComponentByClass<USphereComponent>();
+	BodyCollision = Cast<UCapsuleComponent>(GetCapsuleByName("BodyCapsule"));
+	if(HeadCollision && BodyCollision)
+	{
+		HeadCollision->SetupAttachment(SkeletalMeshComponent, FName("headSocket"));
+		BodyCollision->SetupAttachment(SkeletalMeshComponent, FName("bodySocket"));
+		UE_LOG(LogTemp, Warning, TEXT("THIS HAS WORKED"));
+	}
+	
+}
+
 void ATarget::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	HeadCollision->SetWorldLocation(SkeletalMeshComponent->GetSocketLocation(FName("headSocket")));
+	BodyCollision->SetWorldLocation(SkeletalMeshComponent->GetSocketLocation(FName("bodySocket")));
+	
+	if(DrawDebug)
+	{
+		DrawDebugSphere(GetWorld(), HeadCollision->GetComponentLocation(), HeadCollision->GetScaledSphereRadius(), 32, FColor::Green, false, 0.1f, 0, 2);
+
+	
+		FVector CapsuleLocation = BodyCollision->GetComponentLocation();
+		FRotator CapsuleRotation = BodyCollision->GetComponentRotation();
+
+		FQuat CapsuleQuat = FQuat(CapsuleRotation);
+	
+		float CapsuleHalfHeight = BodyCollision->GetScaledCapsuleHalfHeight();
+		float CapsuleRadius = BodyCollision->GetScaledCapsuleRadius();
+	
+		DrawDebugCapsule(GetWorld(), CapsuleLocation, CapsuleHalfHeight, CapsuleRadius, CapsuleQuat, FColor::Green, false, -1, 0, 2);
+	}
+	
 
 }
 
-// Called to bind functionality to input
 void ATarget::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
+
+UActorComponent* ATarget::GetCapsuleByName(FName CompName)
+{
+	TArray<UActorComponent*> Components;
+	GetComponents(Components);
+	for (UActorComponent* Component : Components)
+	{
+		if (Component && Component->GetFName() == CompName)
+		{
+			return Component;
+		}
+	}
+	return nullptr;
+}
+
+void ATarget::HandleHit(UPrimitiveComponent* HitComponent, FDamageInfo DamageInfo)
+{
+	FString ComponentName = HitComponent->GetName();
+	UE_LOG(LogTemp, Warning, TEXT("ON THE TARGET"));
+	UE_LOG(LogTemp, Warning, TEXT("Hit Component Name: %s"), *ComponentName)
+}
+
+
+
 

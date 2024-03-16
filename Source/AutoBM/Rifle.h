@@ -16,6 +16,21 @@ struct FSprayPatternData : public FTableRowBase
 	FVector2D SpreadFactor;
 };
 
+USTRUCT(BlueprintType)
+struct FDamageInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float HeadshotDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BodyShotDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AppendageDamage;
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponFired); //Binds to Gun for anim calls
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponReload);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponUpdateAmmoHUD, int, CO, int, FO);
@@ -71,14 +86,17 @@ private:
 
 	float MaxWalkingInaccuracy = 10.0f; //TBD Speed before inaccurays
 
-	UPROPERTY(EditDefaultsOnly, Category = "Bullet") //Decals and Tracers
+	UPROPERTY(EditAnywhere, Category = "Bullet") //Decals and Tracers
 	UMaterialInterface* BulletDecalMaterial;
+
+	UPROPERTY(EditAnywhere, Category = "Bullet") //Decals and Tracers
+	UMaterialInterface* BulletDecalMaterialBlood;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
 	TSubclassOf<ATracer> BulletClass;
 	
 	UFUNCTION()
-	void SpawnDecalAtLocation(FVector& Location, FVector& Normal);
+	void SpawnDecalAtLocation(FVector& Location, FVector& Normal, bool isTarget);
 
 	
 	UPROPERTY() //Ammo and Reload Properties 
@@ -135,6 +153,9 @@ private:
 	UNiagaraComponent* MuzzleFlashSystem;
 
 	UPointLightComponent* LightComponent;
+
+	UPROPERTY(EditAnywhere, Category="Damage")
+	FDamageInfo DamageInfo;
 
 	
 

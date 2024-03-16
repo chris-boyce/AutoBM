@@ -6,6 +6,7 @@
 #include "Components/DecalComponent.h"
 #include "FirstPersonPlayer.h"
 #include "NiagaraComponent.h"
+#include "Shootable.h"
 #include "Tracer.h"
 #include "Components/PointLightComponent.h"
 #include "GameFramework/Character.h"
@@ -126,13 +127,26 @@ void ARifle::FireWeapon()
 
 	if (bHit)
 	{
-		SpawnDecalAtLocation(HitResult.ImpactPoint, HitResult.ImpactNormal);
+		
 		TargetPosition = HitResult.ImpactPoint;
-		AActor* HitActor = HitResult.GetActor();
-		if (HitActor)
+		UE_LOG(LogTemp, Warning, TEXT("HAS HIT"));
+		auto HitComponent = HitResult.GetComponent();
+		if (HitComponent)
 		{
-			//When Hit Actor
+			AActor* HitActor = HitResult.GetActor();
+			IShootable* HitHandler = Cast<IShootable>(HitActor);
+			if (HitHandler)
+			{
+				HitHandler->HandleHit(HitComponent, DamageInfo);
+				SpawnDecalAtLocation(HitResult.ImpactPoint, HitResult.ImpactNormal, true);
+			}
+			else
+			{
+				SpawnDecalAtLocation(HitResult.ImpactPoint, HitResult.ImpactNormal, false);
+			}
+			
 		}
+		
 		
 	}
 	else
@@ -181,12 +195,17 @@ FVector ARifle::ApplyInaccuracy(FVector Direction, float Speed)
 	return NewDirection;
 }
 
-void ARifle::SpawnDecalAtLocation(FVector& Location, FVector& Normal)
+void ARifle::SpawnDecalAtLocation(FVector& Location, FVector& Normal, bool isTarget)
 {
-	if (BulletDecalMaterial)
+	if (isTarget == false)
 	{
 		UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), BulletDecalMaterial, FVector(10.0f, 10.0f, 10.0f), Location, Normal.Rotation());
-		Decal->SetFadeScreenSize(0.001f); 
+		Decal->SetFadeScreenSize(0.001f);
+	}
+	else
+	{
+		UDecalComponent* Decal = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), BulletDecalMaterialBlood, FVector(5.0f, 5.0f, 5.0f), Location, Normal.Rotation());
+		Decal->SetFadeScreenSize(0.001f);
 	}
 }
 

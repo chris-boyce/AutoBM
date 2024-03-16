@@ -3,27 +3,40 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Shootable.h"
 #include "GameFramework/Character.h"
 #include "Target.generated.h"
 
+class USphereComponent;
 UCLASS()
-class AUTOBM_API ATarget : public ACharacter
+class AUTOBM_API ATarget : public ACharacter, public IShootable
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
 	ATarget();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
+	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UPROPERTY(EditAnywhere, Category="BodySetup")
+	USkeletalMeshComponent* SkeletalMeshComponent;
+
+	UPROPERTY(EditAnywhere, Category="BodySetup")
+	USphereComponent* HeadCollision;
+
+	UPROPERTY(EditAnywhere, Category="BodySetup")
+	UCapsuleComponent* BodyCollision;
+
+	UActorComponent* GetCapsuleByName(FName CompName);
+
+	virtual void HandleHit(UPrimitiveComponent* HitComponent, FDamageInfo DamageInfo) override;
+
+	UPROPERTY(EditAnywhere, Category="Debug")
+	bool DrawDebug = false;
 };
