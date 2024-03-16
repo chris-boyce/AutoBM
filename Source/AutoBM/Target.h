@@ -33,6 +33,12 @@ public:
 	UPROPERTY(EditAnywhere, Category="BodySetup")
 	UCapsuleComponent* BodyCollision;
 
+	UPROPERTY(EditAnywhere, Category="BodySetup")
+	UCapsuleComponent* RightLegCollision;
+
+	UPROPERTY(EditAnywhere, Category="BodySetup")
+	UCapsuleComponent* LeftLegCollision;
+
 	UActorComponent* GetCapsuleByName(FName CompName);
 
 	virtual void HandleHit(UPrimitiveComponent* HitComponent, FDamageInfo DamageInfo) override;
