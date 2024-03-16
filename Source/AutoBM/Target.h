@@ -39,10 +39,24 @@ public:
 	UPROPERTY(EditAnywhere, Category="BodySetup")
 	UCapsuleComponent* LeftLegCollision;
 
+	UPROPERTY(EditAnywhere, Category="BodySetup")
+	UCapsuleComponent* CapsuleComponentz;
+
 	UActorComponent* GetCapsuleByName(FName CompName);
 
 	virtual void HandleHit(UPrimitiveComponent* HitComponent, FDamageInfo DamageInfo) override;
 
-	UPROPERTY(EditAnywhere, Category="Debug")
-	bool DrawDebug = false;
+	UPROPERTY(VisibleAnywhere, Category="Health")
+	float MaxHealth = 100;
+	
+	UPROPERTY(VisibleAnywhere, Category="Health")
+	float CurrentHealth = MaxHealth;
+
+	void TakeDamage(float Damage);
+
+	void Death();
+
+	void DestroyPawn();
+
+	
 };

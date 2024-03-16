@@ -5,6 +5,7 @@
 
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 ATarget::ATarget()
 {
@@ -22,12 +23,7 @@ void ATarget::BeginPlay()
 	BodyCollision = Cast<UCapsuleComponent>(GetCapsuleByName("BodyCapsule"));
 	RightLegCollision = Cast<UCapsuleComponent>(GetCapsuleByName("RightLegCapsule"));
 	LeftLegCollision = Cast<UCapsuleComponent>(GetCapsuleByName("LeftLegCapsule"));
-	if(HeadCollision && BodyCollision && RightLegCollision)
-	{
-		//HeadCollision->SetupAttachment(SkeletalMeshComponent, FName("headSocket"));
-		//BodyCollision->SetupAttachment(SkeletalMeshComponent, FName("bodySocket"));
-		//RightLegCollision->SetupAttachment(SkeletalMeshComponent, FName("rightLegSocket"));
-	}
+	CapsuleComponentz = GetComponentByClass<UCapsuleComponent>();
 	
 }
 
@@ -63,18 +59,58 @@ void ATarget::HandleHit(UPrimitiveComponent* HitComponent, FDamageInfo DamageInf
 	if(HitComponent == HeadCollision)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Headshot"));
+		TakeDamage(DamageInfo.HeadshotDamage);
 	}
 	else if(HitComponent == BodyCollision)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Bodyshot"));
+		TakeDamage(DamageInfo.BodyShotDamage);
+		
+		
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Else Shot"));
+		TakeDamage(DamageInfo.AppendageDamage);
 	}
 	
 	UE_LOG(LogTemp, Warning, TEXT("Hit Component Name: %s"), *ComponentName)
 }
+
+void ATarget::TakeDamage(float Damage)
+{
+	CurrentHealth = CurrentHealth - Damage;
+	if(CurrentHealth <= 0)
+	{
+		Death();
+	}
+}
+
+void ATarget::Death()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Death Called"));
+
+	HeadCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BodyCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	LeftLegCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	RightLegCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CapsuleComponentz->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
+	GetCharacterMovement()->DisableMovement();
+	SkeletalMeshComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+	SkeletalMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	SkeletalMeshComponent->SetSimulatePhysics(true);
+
+	FTimerHandle RagdollTimerHandle;
+	GetWorldTimerManager().SetTimer(RagdollTimerHandle, this, &ATarget::DestroyPawn, 5.0f, false);
+}
+
+void ATarget::DestroyPawn()
+{
+	Destroy();
+}
+
+
 
 
 

@@ -76,6 +76,14 @@ void ARifle::MuzzleFlash()
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ARifle::TurnOffMuzzleFlashLight, 0.25f, false);
 }
 
+
+
+void ARifle::BloodSplatter(FVector ImpactPoint)
+{
+	AActor* BloodSplatter = GetWorld()->SpawnActor<AActor>(BloodParticalClass, ImpactPoint, FRotator (0.0f, 0.0f, 0.0f));
+	BloodSplatter->SetLifeSpan(1.0f);
+}
+
 void ARifle::FireWeapon()
 {
 	if(bIsReloading) //Checks Player Reload
@@ -139,6 +147,7 @@ void ARifle::FireWeapon()
 			{
 				HitHandler->HandleHit(HitComponent, DamageInfo);
 				SpawnDecalAtLocation(HitResult.ImpactPoint, HitResult.ImpactNormal, true);
+				BloodSplatter(HitResult.ImpactPoint);
 			}
 			else
 			{

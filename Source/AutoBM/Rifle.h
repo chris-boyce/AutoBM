@@ -73,6 +73,8 @@ public:
 	
 private:
 	
+
+	void BloodSplatter(FVector ImpactPoint);
 	void FireWeapon();
 	
 	FVector ApplySprayPattern(FVector OriginalDirection); //Math Offsets for spray and accuarcy 
@@ -94,6 +96,11 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Bullet")
 	TSubclassOf<ATracer> BulletClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Blood")
+	TSubclassOf<AActor> BloodParticalClass;
+
+	
 	
 	UFUNCTION()
 	void SpawnDecalAtLocation(FVector& Location, FVector& Normal, bool isTarget);
