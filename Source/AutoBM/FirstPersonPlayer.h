@@ -74,6 +74,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	UAnimationAsset* ReloadGunAnim;
 
+	UPROPERTY(EditAnywhere)
+	UAnimationAsset* PickupGunAnim;
+	
+	UPROPERTY(EditAnywhere)
+	UAnimationAsset* InspectGunAnim;
+
 	UFUNCTION()
 	float GetMovementSpeed();
 
@@ -103,6 +109,12 @@ public:
 
 	UFUNCTION()
 	void PickUp();
+
+	UFUNCTION()
+	void DropWeapon();
+
+	UFUNCTION()
+	void InspectGun();
 
 	
 

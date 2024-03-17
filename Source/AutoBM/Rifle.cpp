@@ -21,9 +21,7 @@ ARifle::ARifle()
 void ARifle::BeginPlay()
 {
 	Super::BeginPlay();
-
 	
-
 	MuzzleFlashSystem = GetNiagaraComponentByName("MuzzleSystem");
 	LightComponent= FindComponentByClass<UPointLightComponent>();
 	LightComponent->SetIntensity(0.0f);
@@ -226,7 +224,6 @@ void ARifle::SpawnDecalAtLocation(FVector& Location, FVector& Normal, bool isTar
 UClass* ARifle::Pickup()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Gun Return Class"));
-	Destroy();
 	return GetClass();
 	
 }

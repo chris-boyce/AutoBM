@@ -128,6 +128,10 @@ void AFirstPersonCharacterController::OnPossess(APawn* aPawn)
 	{
 		EnhancedInputComponent->BindAction(ActionReload, ETriggerEvent::Triggered, this, &AFirstPersonCharacterController::HandleReload);
 	}
+	if(ActionInspect)
+	{
+		EnhancedInputComponent->BindAction(ActionInspect, ETriggerEvent::Triggered, this, &AFirstPersonCharacterController::HandleInspect);
+	}
 	
 }
 
@@ -267,10 +271,24 @@ void AFirstPersonCharacterController::HandleReload()
 	
 }
 
+void AFirstPersonCharacterController::HandleInspect()
+{
+	if(!bPlayerCanMove)
+	{
+		return;
+	}
+	if(PlayerCharacter->Rifle)
+	{
+		PlayerCharacter->InspectGun();
+	}
+	
+}
+
 void AFirstPersonCharacterController::AddBinds()
 {
 	
 	UE_LOG(LogTemp, Warning, TEXT("Add Binds Run"));
+	
 	if(PlayerCharacter->Rifle)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Rifle Found"));
@@ -281,6 +299,7 @@ void AFirstPersonCharacterController::AddBinds()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Rifle Not Found"));
 	}
+	
 }
 
 

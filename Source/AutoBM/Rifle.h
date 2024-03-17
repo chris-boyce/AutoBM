@@ -113,9 +113,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category="Gun|Stats") 
 	float WeaponReloadTime = 2.0f;
-
 	
-
 	UPROPERTY(EditDefaultsOnly, Category="Gun|Stats") //Spread Clamp Value
 	float RunningOffsetDegreeClamp = 10.0f; 
 	

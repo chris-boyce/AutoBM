@@ -90,6 +90,7 @@ void AFirstPersonPlayer::AttachGun()
 			Rifle->WeaponReload.AddDynamic(this, &AFirstPersonPlayer::WeaponReload);
 			OnWeaponPickup.Broadcast();
 			Rifle->WeaponUpdateAmmoHUD.Broadcast(Rifle->CurrentAmmo, Rifle->FullAmmo);
+			Mesh1P->PlayAnimation(PickupGunAnim, false);
 		}
 	}
 }
@@ -175,13 +176,27 @@ void AFirstPersonPlayer::PickUp()
 			IPickupable* HitHandler = Cast<IPickupable>(HitActor);
 			if (HitHandler)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Has Hit Rifle"));
+				if(Rifle || RifleClass)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Has a Rifle Already In Hand"));
+					DropWeapon();
+				}
 				RifleClass = HitHandler->Pickup();
 				AttachGun();
 				
 			}
 		}
 	}
+}
+
+void AFirstPersonPlayer::DropWeapon()
+{
+	Rifle->Destroy();
+}
+
+void AFirstPersonPlayer::InspectGun()
+{
+	Mesh1P->PlayAnimation(InspectGunAnim, false);
 }
 
 
