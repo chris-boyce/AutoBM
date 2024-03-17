@@ -22,6 +22,8 @@ void ARifle::BeginPlay()
 {
 	Super::BeginPlay();
 
+	
+
 	MuzzleFlashSystem = GetNiagaraComponentByName("MuzzleSystem");
 	LightComponent= FindComponentByClass<UPointLightComponent>();
 	LightComponent->SetIntensity(0.0f);
@@ -44,6 +46,7 @@ void ARifle::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("THIS IS NOT FOUND"));
 	}
+	
 	
 }
 
@@ -166,6 +169,8 @@ void ARifle::FireWeapon()
 	Tracers();
 	MuzzleFlash();
 
+	UGameplayStatics::PlaySoundAtLocation(this, GunFire, GetActorLocation());
+
 	WeaponUpdateAmmoHUD.Broadcast(CurrentAmmo,FullAmmo);
 	
 	//DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Red, false, 1.0f, 0, 1.0f);
@@ -218,12 +223,20 @@ void ARifle::SpawnDecalAtLocation(FVector& Location, FVector& Normal, bool isTar
 	}
 }
 
+UClass* ARifle::Pickup()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Gun Return Class"));
+	Destroy();
+	return GetClass();
+	
+}
+
 void ARifle::RefillAmmo()
 {
 	CurrentAmmo = FullAmmo;
 	bIsReloading = false;
 	WeaponUpdateAmmoHUD.Broadcast(CurrentAmmo,FullAmmo);
-	UE_LOG(LogTemp, Warning, TEXT("RELOAD FINISHED"));
+	
 }
 
 UNiagaraComponent* ARifle::GetNiagaraComponentByName(FName ComponentName)

@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "FirstPersonPlayer.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponPickup);
+
 class ARifle;
 class UCameraComponent;
 UCLASS()
@@ -30,6 +32,9 @@ public:
 
 	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue = 1.0f, bool bForce = false) override;
 
+	UPROPERTY()
+	FOnWeaponPickup OnWeaponPickup;
+	
 	UFUNCTION()
 	void GunFired();
 	
@@ -95,6 +100,9 @@ public:
 
 	UFUNCTION()
 	void WeaponReload();
+
+	UFUNCTION()
+	void PickUp();
 
 	
 

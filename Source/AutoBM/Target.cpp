@@ -13,9 +13,6 @@ ATarget::ATarget()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SkeletalMeshComponent = GetMesh();
-	
-	
-	
 }
 
 void ATarget::BeginPlay()

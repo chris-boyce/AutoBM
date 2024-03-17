@@ -79,7 +79,8 @@ public:
 	UPROPERTY()
 	UFirstPersonWidget* FirstPersonHUD;
 
-	
+	UFUNCTION()
+	void AddBinds();
 
 	virtual void BeginPlay() override;
 	
@@ -99,7 +100,7 @@ protected:
 	void HandleFireUp();
 	void HandleReload();
 
-	void AddBinds();
+	
 
 private:
     UPROPERTY()

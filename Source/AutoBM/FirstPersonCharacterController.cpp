@@ -56,6 +56,16 @@ void AFirstPersonCharacterController::AllowInput(bool bAllowMove)
 void AFirstPersonCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
+	if(PlayerCharacter)
+	{
+		PlayerCharacter->OnWeaponPickup.AddDynamic(this, &AFirstPersonCharacterController::AddBinds);
+		UE_LOG(LogTemp, Warning, TEXT("YEP WE DID IT"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PLAYERCHAR ISNT AROUND BUDDY"));
+	}
+	
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AFirstPersonCharacterController::AddBinds, 0.1f, false);
 }
@@ -218,10 +228,8 @@ void AFirstPersonCharacterController::HandleInteract()
 	{
 		return;
 	}
-	//if(PlayerCharacter)
-	//{
-		//PlayerCharacter->InteractionComponent->FireInteraction();
-	//}
+	PlayerCharacter->PickUp();
+	
 }
 
 void AFirstPersonCharacterController::HandleFireDown()
@@ -230,12 +238,20 @@ void AFirstPersonCharacterController::HandleFireDown()
 	{
 		return;
 	}
-	PlayerCharacter->Rifle->StartFiring();
+	if(PlayerCharacter->Rifle)
+	{
+		PlayerCharacter->Rifle->StartFiring();
+	}
+	
 }
 
 void AFirstPersonCharacterController::HandleFireUp()
 {
-	PlayerCharacter->Rifle->StopFiring();
+	if(PlayerCharacter->Rifle)
+	{
+		PlayerCharacter->Rifle->StopFiring();
+	}
+	
 }
 
 void AFirstPersonCharacterController::HandleReload()
@@ -244,17 +260,20 @@ void AFirstPersonCharacterController::HandleReload()
 	{
 		return;
 	}
-	PlayerCharacter->Rifle->Reload();
-	UE_LOG(LogTemp, Warning, TEXT("REload Button Hit"));
-
-	
+	if(PlayerCharacter->Rifle)
+	{
+		PlayerCharacter->Rifle->Reload();
+	}
 	
 }
 
 void AFirstPersonCharacterController::AddBinds()
 {
+	
+	UE_LOG(LogTemp, Warning, TEXT("Add Binds Run"));
 	if(PlayerCharacter->Rifle)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Rifle Found"));
 		PlayerCharacter->Rifle->WeaponUpdateAmmoHUD.AddDynamic(FirstPersonHUD, &UFirstPersonWidget::UpdateAmmo);
 		PlayerCharacter->Rifle->WeaponUpdateReloadTime.AddDynamic(FirstPersonHUD, &UFirstPersonWidget::UpdateReloadBar);
 	}

@@ -3,6 +3,7 @@
 
 #include "FirstPersonPlayer.h"
 
+#include "Pickupable.h"
 #include "Camera/CameraComponent.h"
 #include "Rifle.h"
 #include "Components/CapsuleComponent.h"
@@ -37,19 +38,6 @@ void AFirstPersonPlayer::BeginPlay()
 
 	CharacterMovementComp = GetCharacterMovement();
 	
-	if (RifleClass)
-	{
-		Rifle = GetWorld()->SpawnActor<ARifle>(RifleClass, FVector::ZeroVector, FRotator::ZeroRotator);
-
-		if (Rifle)
-		{
-			FName SocketName = TEXT("r_socket");
-			Rifle->Player = this;
-			Rifle->AttachToComponent(Mesh1P, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
-			Rifle->WeaponFired.AddDynamic(this, &AFirstPersonPlayer::GunFired);
-			Rifle->WeaponReload.AddDynamic(this, &AFirstPersonPlayer::WeaponReload);
-		}
-	}
 	
 	if(GetMovementComponent())
 	{
@@ -89,7 +77,21 @@ void AFirstPersonPlayer::AddMovementInput(FVector WorldDirection, float ScaleVal
 
 void AFirstPersonPlayer::AttachGun()
 {
-	//Add Gun Attachment
+	if (RifleClass)
+	{
+		Rifle = GetWorld()->SpawnActor<ARifle>(RifleClass, FVector::ZeroVector, FRotator::ZeroRotator);
+
+		if (Rifle)
+		{
+			FName SocketName = TEXT("r_socket");
+			Rifle->Player = this;
+			Rifle->AttachToComponent(Mesh1P, FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+			Rifle->WeaponFired.AddDynamic(this, &AFirstPersonPlayer::GunFired);
+			Rifle->WeaponReload.AddDynamic(this, &AFirstPersonPlayer::WeaponReload);
+			OnWeaponPickup.Broadcast();
+			Rifle->WeaponUpdateAmmoHUD.Broadcast(Rifle->CurrentAmmo, Rifle->FullAmmo);
+		}
+	}
 }
 
 void AFirstPersonPlayer::ToggleRunning()
@@ -145,6 +147,42 @@ void AFirstPersonPlayer::WeaponReload()
 	Mesh1P->PlayAnimation(ReloadGunAnim, false);
 }
 
+void AFirstPersonPlayer::PickUp()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Pickup Called"));
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	FVector StartLocation; 
+	FRotator StartRotation;
+	PlayerController->GetPlayerViewPoint(StartLocation, StartRotation);
+	FVector FiringDirection = StartRotation.Vector();
+	FVector EndLocation = StartLocation + (FiringDirection * 500); 
+	
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this); 
+	QueryParams.AddIgnoredActor(GetOwner()); 
+	QueryParams.bTraceComplex = true;
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECC_Visibility, QueryParams);
+
+	if (bHit)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HAS HIT"));
+		auto HitComponent = HitResult.GetComponent();
+		if (HitComponent)
+		{
+			AActor* HitActor = HitResult.GetActor();
+			IPickupable* HitHandler = Cast<IPickupable>(HitActor);
+			if (HitHandler)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Has Hit Rifle"));
+				RifleClass = HitHandler->Pickup();
+				AttachGun();
+				
+			}
+		}
+	}
+}
 
 
 void AFirstPersonPlayer::GunFired()
