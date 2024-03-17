@@ -7,6 +7,8 @@
 #include "GameFramework/Character.h"
 #include "Target.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeath);
+
 class USphereComponent;
 UCLASS()
 class AUTOBM_API ATarget : public ACharacter, public IShootable
@@ -57,6 +59,9 @@ public:
 	void Death();
 
 	void DestroyPawn();
+
+	UPROPERTY()
+	FOnDeath OnDeath;
 
 	
 };

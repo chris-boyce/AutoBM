@@ -3,9 +3,11 @@
 
 #include "Target.h"
 
+#include "HUDManager.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ATarget::ATarget()
 {
@@ -24,6 +26,10 @@ void ATarget::BeginPlay()
 	RightLegCollision = Cast<UCapsuleComponent>(GetCapsuleByName("RightLegCapsule"));
 	LeftLegCollision = Cast<UCapsuleComponent>(GetCapsuleByName("LeftLegCapsule"));
 	CapsuleComponentz = GetComponentByClass<UCapsuleComponent>();
+
+	AActor* HUDManagerActor = UGameplayStatics::GetActorOfClass(GetWorld(), AHUDManager::StaticClass());
+	AHUDManager* HUDManager = Cast<AHUDManager>(HUDManagerActor);
+	HUDManager->AddEnemyToSubList(this);
 	
 }
 
@@ -101,8 +107,12 @@ void ATarget::Death()
 	SkeletalMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	SkeletalMeshComponent->SetSimulatePhysics(true);
 
+	OnDeath.Broadcast();
+	
 	FTimerHandle RagdollTimerHandle;
 	GetWorldTimerManager().SetTimer(RagdollTimerHandle, this, &ATarget::DestroyPawn, 5.0f, false);
+
+	
 }
 
 void ATarget::DestroyPawn()

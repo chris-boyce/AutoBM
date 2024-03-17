@@ -72,12 +72,14 @@ public:
 
 	UPROPERTY()
 	UUserWidget* CrosshairWidgetInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD")
+	TSubclassOf<UUserWidget> FirstPersonHUDClass;
 	
 	UPROPERTY()
 	UFirstPersonWidget* FirstPersonHUD;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD")
-	TSubclassOf<UUserWidget> FirstPersonHUDClass;
+	
 
 	virtual void BeginPlay() override;
 	
