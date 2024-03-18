@@ -182,6 +182,7 @@ void AFirstPersonPlayer::PickUp()
 					DropWeapon();
 				}
 				RifleClass = HitHandler->Pickup();
+				UE_LOG(LogTemp, Warning, TEXT("Rifle of class %s picked up!"), *RifleClass->GetName());
 				AttachGun();
 				
 			}
