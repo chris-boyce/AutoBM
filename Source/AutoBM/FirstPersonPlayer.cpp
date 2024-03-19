@@ -10,6 +10,8 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
 
 AFirstPersonPlayer::AFirstPersonPlayer()
 {
@@ -30,6 +32,8 @@ AFirstPersonPlayer::AFirstPersonPlayer()
 	Mesh1P->bCastDynamicShadow = false;
 	Mesh1P->CastShadow = false;
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
+
+	SetupStimSource();
 
 }
 
@@ -74,6 +78,18 @@ void AFirstPersonPlayer::Crouch(bool bCilentSimulation)
 void AFirstPersonPlayer::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
 {
 	Super::AddMovementInput(WorldDirection, ScaleValue, bForce);
+}
+
+void AFirstPersonPlayer::SetupStimSource()
+{
+	
+	StimuliSourceComponent = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("Stim"));
+	if(StimuliSourceComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Stimulus"));
+		StimuliSourceComponent->RegisterForSense(TSubclassOf<UAISense_Sight>());
+		StimuliSourceComponent->RegisterWithPerceptionSystem();
+	}
 }
 
 void AFirstPersonPlayer::AttachGun()

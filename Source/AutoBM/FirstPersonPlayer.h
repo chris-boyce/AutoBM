@@ -10,6 +10,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponPickup);
 
 class ARifle;
 class UCameraComponent;
+class UAIPerceptionStimuliSourceComponent;
 UCLASS()
 class AUTOBM_API AFirstPersonPlayer : public ACharacter
 {
@@ -31,7 +32,12 @@ public:
 	virtual void Crouch(bool bCilentSimulation = false) override;
 
 	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue = 1.0f, bool bForce = false) override;
+	
+	UAIPerceptionStimuliSourceComponent* StimuliSourceComponent;
 
+	UFUNCTION()
+	void SetupStimSource();
+	
 	UPROPERTY()
 	FOnWeaponPickup OnWeaponPickup;
 	
