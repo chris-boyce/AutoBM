@@ -23,7 +23,7 @@ void AHUDManager::BeginPlay()
 
 void AHUDManager::AddKillFeedHUD()
 {
-	KillFeedWidget = CreateWidget<UKillFeedWidget>(PlayerController, KillFeedClass);
+	KillFeedWidget = CreateWidget<UKillFeedWidget>(GetWorld(), KillFeedClass);
 	if(KillFeedWidget)
 	{
 		KillFeedWidget->AddToViewport();

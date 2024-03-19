@@ -3,6 +3,7 @@
 
 #include "FirstPersonPlayer.h"
 
+#include "Interactable.h"
 #include "Pickupable.h"
 #include "Camera/CameraComponent.h"
 #include "Rifle.h"
@@ -144,19 +145,17 @@ void AFirstPersonPlayer::CameraBob()
 
 void AFirstPersonPlayer::WeaponReload()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Player Reload"));
 	Mesh1P->PlayAnimation(ReloadGunAnim, false);
 }
 
 void AFirstPersonPlayer::PickUp()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Pickup Called"));
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	FVector StartLocation; 
+	FVector StartLocation, EndLocation; 
 	FRotator StartRotation;
+
 	PlayerController->GetPlayerViewPoint(StartLocation, StartRotation);
-	FVector FiringDirection = StartRotation.Vector();
-	FVector EndLocation = StartLocation + (FiringDirection * 500); 
+	EndLocation = StartLocation + (StartRotation.Vector() * 500); 
 	
 	FHitResult HitResult;
 	FCollisionQueryParams QueryParams;
@@ -168,25 +167,24 @@ void AFirstPersonPlayer::PickUp()
 
 	if (bHit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HAS HIT"));
-		auto HitComponent = HitResult.GetComponent();
-		if (HitComponent)
+		IPickupable* Pickupable = Cast<IPickupable>(HitResult.GetActor());
+		IInteractable* Interactable = Cast<IInteractable>(HitResult.GetActor());
+		if (Pickupable)
 		{
-			AActor* HitActor = HitResult.GetActor();
-			IPickupable* HitHandler = Cast<IPickupable>(HitActor);
-			if (HitHandler)
+			if(Rifle || RifleClass)
 			{
-				if(Rifle || RifleClass)
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Has a Rifle Already In Hand"));
-					DropWeapon();
-				}
-				RifleClass = HitHandler->Pickup();
-				UE_LOG(LogTemp, Warning, TEXT("Rifle of class %s picked up!"), *RifleClass->GetName());
-				AttachGun();
-				
+				DropWeapon();
 			}
+			RifleClass = Pickupable->Pickup();
+			AttachGun();
+				
 		}
+		else if(Interactable)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Has Interacted"));
+			Interactable->Interact();
+		}
+		
 	}
 }
 
