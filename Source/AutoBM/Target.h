@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AIRifle.h"
 #include "Shootable.h"
 #include "GameFramework/Character.h"
 #include "Target.generated.h"
@@ -62,6 +63,12 @@ public:
 
 	UPROPERTY()
 	FOnDeath OnDeath;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AAIRifle> AIRifleClass;
+
+	UPROPERTY()
+	AAIRifle* AIRifle;
 
 	
 };

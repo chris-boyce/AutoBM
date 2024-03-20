@@ -2,8 +2,7 @@
 
 
 #include "AICharacter.h"
-
-#include "FirstPersonPlayer.h"
+#include "Target.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
@@ -48,11 +47,29 @@ void AAICharacter::SetupSight()
 
 void AAICharacter::OnTargetSeen(AActor* SeenActor, FAIStimulus const Stim)
 {
-	UE_LOG(LogTemp, Warning, TEXT("SEEN PLAYER"));
-	if(AFirstPersonPlayer* const Player = Cast<AFirstPersonPlayer>(SeenActor))
+	
+	if(Cast<ATarget>(SeenActor))
 	{
-		GetBlackboardComponent()->SetValueAsBool("bSeenPlayer", Stim.WasSuccessfullySensed());
+		Target = SeenActor;
+		UE_LOG(LogTemp, Warning, TEXT("Target"));
+		GetBlackboardComponent()->SetValueAsBool("bSeenTarget", Stim.WasSuccessfullySensed());
 	}
+}
+
+void AAICharacter::OnTargetLost(AActor* LostActor, FAIStimulus const Stim)
+{
+	UE_LOG(LogTemp, Warning, TEXT("LOST THE ACTOR"));
+	if(LostActor == Target)
+	{
+		GetBlackboardComponent()->SetValueAsBool("bSeenTarget", false);
+		GetBlackboardComponent()->SetValueAsBool("bLookingAtTarget", false);
+	}
+	
+}
+
+void AAICharacter::FireWeapon()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Firing Weapon"));
 }
 
 

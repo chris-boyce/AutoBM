@@ -9,12 +9,12 @@
 
 UBTTask_Walk::UBTTask_Walk(FObjectInitializer const& ObjectInitializer)
 {
-	NodeName = "returnLocation";
+	NodeName = "FollowRoute";
 }
 
 EBTNodeResult::Type UBTTask_Walk::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	UE_LOG(LogTemp, Warning, TEXT("HAS ENTERED"));
+	
 	if(AAIController* const AIController = Cast<AAIController>(OwnerComp.GetAIOwner()))
 	{
 		
@@ -28,6 +28,7 @@ EBTNodeResult::Type UBTTask_Walk::ExecuteTask(UBehaviorTreeComponent& OwnerComp,
 				{
 					OwnerComp.GetBlackboardComponent()->SetValueAsVector(GetSelectedBlackboardKey(), NewLocation.Location);
 				}
+				
 				UE_LOG(LogTemp, Warning, TEXT("Successs"));
 				FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 				return  EBTNodeResult::Succeeded;

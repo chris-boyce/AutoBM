@@ -7,6 +7,7 @@
 #include "Perception/AIPerceptionTypes.h"
 #include "AICharacter.generated.h"
 
+class ATarget;
 class UAISenseConfig_Sight;
 UCLASS()
 class AUTOBM_API AAICharacter : public AAIController
@@ -31,6 +32,9 @@ public:
 
 	UFUNCTION()
 	void OnTargetSeen(AActor* SeenActor, FAIStimulus const Stim);
+	
+	UFUNCTION()
+	void OnTargetLost(AActor* LostActor, FAIStimulus Stim);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
 	float SightRadius = 3000;
@@ -38,6 +42,12 @@ public:
 	float LoseRadius = 5000;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
 	float VisionAngle = 180;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	AActor* Target;
+
+	UFUNCTION()
+	void FireWeapon();
 
 	
 };

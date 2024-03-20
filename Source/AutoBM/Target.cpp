@@ -13,6 +13,8 @@ ATarget::ATarget()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SkeletalMeshComponent = GetMesh();
+
+	
 }
 
 void ATarget::BeginPlay()
@@ -27,6 +29,13 @@ void ATarget::BeginPlay()
 	AActor* HUDManagerActor = UGameplayStatics::GetActorOfClass(GetWorld(), AHUDManager::StaticClass());
 	AHUDManager* HUDManager = Cast<AHUDManager>(HUDManagerActor);
 	HUDManager->AddEnemyToSubList(this);
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+
+	AIRifle = GetWorld()->SpawnActor<AAIRifle>(AIRifleClass, GetActorLocation(), GetActorRotation(), SpawnParams);
+	AIRifle->AttachToComponent(SkeletalMeshComponent, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("GunSocket"));
+
 	
 }
 
@@ -115,6 +124,7 @@ void ATarget::Death()
 void ATarget::DestroyPawn()
 {
 	Destroy();
+	AIRifle->Destroy();
 }
 
 
