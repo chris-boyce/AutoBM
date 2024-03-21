@@ -47,29 +47,32 @@ void AAICharacter::SetupSight()
 
 void AAICharacter::OnTargetSeen(AActor* SeenActor, FAIStimulus const Stim)
 {
-	
-	if(Cast<ATarget>(SeenActor))
+	if(Stim.WasSuccessfullySensed())
 	{
-		Target = SeenActor;
-		UE_LOG(LogTemp, Warning, TEXT("Target"));
-		GetBlackboardComponent()->SetValueAsBool("bSeenTarget", Stim.WasSuccessfullySensed());
+		if(Cast<ATarget>(SeenActor))
+		{
+			Target = SeenActor;
+			UE_LOG(LogTemp, Warning, TEXT("Target"));
+			GetBlackboardComponent()->SetValueAsBool("bSeenTarget", Stim.WasSuccessfullySensed());
+		}
 	}
-}
-
-void AAICharacter::OnTargetLost(AActor* LostActor, FAIStimulus const Stim)
-{
-	UE_LOG(LogTemp, Warning, TEXT("LOST THE ACTOR"));
-	if(LostActor == Target)
+	else
 	{
+		UE_LOG(LogTemp, Warning, TEXT("LOST THE ACTOR"));
 		GetBlackboardComponent()->SetValueAsBool("bSeenTarget", false);
 		GetBlackboardComponent()->SetValueAsBool("bLookingAtTarget", false);
+		SetFocus(nullptr);
 	}
 	
 }
+
+
 
 void AAICharacter::FireWeapon()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Firing Weapon"));
 }
+
+
 
 

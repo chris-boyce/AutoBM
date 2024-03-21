@@ -127,6 +127,11 @@ void ATarget::DestroyPawn()
 	AIRifle->Destroy();
 }
 
+AAIPath* ATarget::GetAIPath()
+{
+	return AIPath;
+}
+
 
 
 

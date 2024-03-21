@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AIPath.h"
 #include "AIRifle.h"
 #include "Shootable.h"
 #include "GameFramework/Character.h"
@@ -61,6 +62,12 @@ public:
 
 	void DestroyPawn();
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="AI")
+	AAIPath* AIPath;
+
+	UFUNCTION()
+	AAIPath* GetAIPath();
+	
 	UPROPERTY()
 	FOnDeath OnDeath;
 

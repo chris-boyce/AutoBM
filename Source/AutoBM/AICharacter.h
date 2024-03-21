@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "AIPath.h"
 #include "Perception/AIPerceptionTypes.h"
 #include "AICharacter.generated.h"
 
@@ -33,8 +34,6 @@ public:
 	UFUNCTION()
 	void OnTargetSeen(AActor* SeenActor, FAIStimulus const Stim);
 	
-	UFUNCTION()
-	void OnTargetLost(AActor* LostActor, FAIStimulus Stim);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
 	float SightRadius = 3000;
@@ -49,5 +48,6 @@ public:
 	UFUNCTION()
 	void FireWeapon();
 
+	
 	
 };
