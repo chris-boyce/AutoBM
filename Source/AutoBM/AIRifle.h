@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Rifle.h"
 #include "GameFramework/Actor.h"
 #include "AIRifle.generated.h"
 
@@ -12,15 +13,29 @@ class AUTOBM_API AAIRifle : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AAIRifle();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION()
+	void GunFiring(AActor* Target);
+
+	UFUNCTION()
+	void GunStopFiring();
+
+	FTimerHandle FiringTimerHandle;
+
+	UFUNCTION()
+	void FireWeapon();
+
+	UPROPERTY()
+	AActor* CurrentActor;
+
+	UPROPERTY(EditAnywhere, Category="Damage")
+	FDamageInfo DamageInfo;
 
 };

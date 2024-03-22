@@ -10,6 +10,7 @@
 void AAICharacter::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+	Self = Cast<ATarget>(GetPawn());
 	if (BehaviorTree)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("We Are Alive"));
@@ -62,6 +63,9 @@ void AAICharacter::OnTargetSeen(AActor* SeenActor, FAIStimulus const Stim)
 		GetBlackboardComponent()->SetValueAsBool("bSeenTarget", false);
 		GetBlackboardComponent()->SetValueAsBool("bLookingAtTarget", false);
 		SetFocus(nullptr);
+		Self->AIRifle->GunStopFiring();
+		bWeaponFired = false;
+		
 	}
 	
 }
@@ -70,8 +74,15 @@ void AAICharacter::OnTargetSeen(AActor* SeenActor, FAIStimulus const Stim)
 
 void AAICharacter::FireWeapon()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Firing Weapon"));
+	if(!bWeaponFired)
+	{
+		bWeaponFired = true;
+		Self->AIRifle->GunFiring(Target);
+	}
+	
 }
+
+
 
 
 

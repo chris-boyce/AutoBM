@@ -45,8 +45,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
 	AActor* Target;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	ATarget* Self;
+
 	UFUNCTION()
 	void FireWeapon();
+
+	bool bWeaponFired = false;
+
+	UFUNCTION()
+	void LookAtTarget();
+	
 
 	
 	

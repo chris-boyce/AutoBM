@@ -100,6 +100,7 @@ void ATarget::TakeDamage(float Damage)
 
 void ATarget::Death()
 {
+	DetachFromControllerPendingDestroy();
 	UE_LOG(LogTemp, Warning, TEXT("Death Called"));
 
 	HeadCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -114,6 +115,8 @@ void ATarget::Death()
 	SkeletalMeshComponent->SetSimulatePhysics(true);
 
 	OnDeath.Broadcast();
+
+	
 	
 	FTimerHandle RagdollTimerHandle;
 	GetWorldTimerManager().SetTimer(RagdollTimerHandle, this, &ATarget::DestroyPawn, 5.0f, false);
