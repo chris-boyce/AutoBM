@@ -53,8 +53,7 @@ public:
 
 	bool bWeaponFired = false;
 
-	UFUNCTION()
-	void LookAtTarget();
+	
 	
 
 	

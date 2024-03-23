@@ -6,6 +6,7 @@
 #include "AIPath.h"
 #include "AIRifle.h"
 #include "Shootable.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
 #include "Target.generated.h"
 
@@ -45,6 +46,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="BodySetup")
 	UCapsuleComponent* CapsuleComponentz;
+
+	UPROPERTY(EditAnywhere, Category="BodySetup")
+	UBoxComponent* HeadDirectionsComp;
 
 	UActorComponent* GetCapsuleByName(FName CompName);
 

@@ -21,7 +21,7 @@ protected:
 public:
 	
 	UFUNCTION()
-	FVector GetPatolPoint(int const index) const;
+	FVector GetPatrolPoint(int const index) const;
 
 	UFUNCTION()
 	int Num() const;

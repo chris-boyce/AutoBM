@@ -3,10 +3,13 @@
 
 #include "Target.h"
 
+#include "AIController.h"
 #include "HUDManager.h"
+#include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "NavigationSystem.h"
 #include "Kismet/GameplayStatics.h"
 
 ATarget::ATarget()
@@ -24,6 +27,7 @@ void ATarget::BeginPlay()
 	BodyCollision = Cast<UCapsuleComponent>(GetCapsuleByName("BodyCapsule"));
 	RightLegCollision = Cast<UCapsuleComponent>(GetCapsuleByName("RightLegCapsule"));
 	LeftLegCollision = Cast<UCapsuleComponent>(GetCapsuleByName("LeftLegCapsule"));
+	
 	CapsuleComponentz = GetComponentByClass<UCapsuleComponent>();
 
 	AActor* HUDManagerActor = UGameplayStatics::GetActorOfClass(GetWorld(), AHUDManager::StaticClass());
@@ -36,6 +40,11 @@ void ATarget::BeginPlay()
 	AIRifle = GetWorld()->SpawnActor<AAIRifle>(AIRifleClass, GetActorLocation(), GetActorRotation(), SpawnParams);
 	AIRifle->AttachToComponent(SkeletalMeshComponent, FAttachmentTransformRules::SnapToTargetIncludingScale, TEXT("GunSocket"));
 
+	HeadDirectionsComp = AIRifle->GetComponentByClass<UBoxComponent>();
+
+	AAIController* AIController = Cast<AAIController>(GetController());
+	
+	
 	
 }
 

@@ -63,7 +63,6 @@ void AAICharacter::OnTargetSeen(AActor* SeenActor, FAIStimulus const Stim)
 		GetBlackboardComponent()->SetValueAsBool("bSeenTarget", false);
 		GetBlackboardComponent()->SetValueAsBool("bLookingAtTarget", false);
 		SetFocus(nullptr);
-		Self->AIRifle->GunStopFiring();
 		bWeaponFired = false;
 		
 	}
@@ -77,10 +76,12 @@ void AAICharacter::FireWeapon()
 	if(!bWeaponFired)
 	{
 		bWeaponFired = true;
-		Self->AIRifle->GunFiring(Target);
+		
 	}
 	
 }
+
+
 
 
 

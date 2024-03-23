@@ -23,7 +23,7 @@ EBTNodeResult::Type UMyBTTask_FindAIPathPoint::ExecuteTask(UBehaviorTreeComponen
 
 			if(ATarget* AIPawn = Cast<ATarget>(SelfController->GetPawn()))
 			{
-				FVector Point = AIPawn->GetAIPath()->GetPatolPoint(index);
+				FVector Point = AIPawn->GetAIPath()->GetPatrolPoint(index);
 				auto GlobalPoint = AIPawn->GetAIPath()->GetActorTransform().TransformPosition(Point);
 				Blackboard->SetValueAsVector(AIPathVectorKey.SelectedKeyName, GlobalPoint);
 

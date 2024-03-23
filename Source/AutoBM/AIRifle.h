@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Rifle.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
 #include "AIRifle.generated.h"
 
@@ -20,22 +21,23 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-
-	UFUNCTION()
-	void GunFiring(AActor* Target);
-
-	UFUNCTION()
-	void GunStopFiring();
-
+	
 	FTimerHandle FiringTimerHandle;
-
-	UFUNCTION()
-	void FireWeapon();
-
-	UPROPERTY()
-	AActor* CurrentActor;
-
+	
 	UPROPERTY(EditAnywhere, Category="Damage")
 	FDamageInfo DamageInfo;
+
+	void FireGun();
+	void StopFireGun();
+	void ToggleFire(bool Toggle, AActor* Target);
+	void FireBullet();
+
+	UPROPERTY(VisibleAnywhere)
+	AActor* CurrentActor;
+
+	UPROPERTY(VisibleAnywhere)
+	UBoxComponent* HeadDirection;
+
+	FTimerHandle FireRateTimer;
 
 };

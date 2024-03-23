@@ -18,7 +18,7 @@ void AAIPath::BeginPlay()
 	
 }
 
-FVector AAIPath::GetPatolPoint(int const index) const
+FVector AAIPath::GetPatrolPoint(int const index) const
 {
 	return PatrolPoints[index];
 }
