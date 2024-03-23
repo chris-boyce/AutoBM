@@ -30,6 +30,10 @@ public:
 	void FireGun();
 	void StopFireGun();
 	void ToggleFire(bool Toggle, AActor* Target);
+	
+	FVector ApplySprayPattern(FVector Vector);
+
+	FVector ApplyInaccuracy(FVector Vector);
 	void FireBullet();
 
 	UPROPERTY(VisibleAnywhere)
@@ -39,5 +43,18 @@ public:
 	UBoxComponent* HeadDirection;
 
 	FTimerHandle FireRateTimer;
+
+	UPROPERTY(EditDefaultsOnly, Category="Gun|Stats") //Spray Pattern Data Table Values Written to array
+	UDataTable* SprayPatternDataTable;
+
+	UPROPERTY() 
+	TArray<FSprayPatternData> SprayPattern;
+
+	int CurrentPatternIndex = 0;
+
+	int FullAmmo = 30;
+	int CurrentAmmo = 30;
+
+	void Reload();
 
 };

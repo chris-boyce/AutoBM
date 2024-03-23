@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "Target.h"
-#include "Perception/AIPerceptionComponent.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "NavigationSystem.h"
@@ -31,8 +30,6 @@ public:
 
 	UFUNCTION()
 	void SetupSight();
-	
-	
 	
 	UFUNCTION()
 	void TargetUpdate(AActor* SeenActor, FAIStimulus const Stim);
