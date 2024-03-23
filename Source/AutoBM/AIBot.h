@@ -21,6 +21,8 @@ class AUTOBM_API AAIBot : public AAIController
 
 	virtual void BeginPlay() override;
 
+	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
+
 public:
 	explicit AAIBot(FObjectInitializer const& ObjectInitializer);
 
@@ -29,14 +31,18 @@ public:
 
 	UFUNCTION()
 	void SetupSight();
-
+	
+	
+	
 	UFUNCTION()
 	void TargetUpdate(AActor* SeenActor, FAIStimulus const Stim);
 
 	UFUNCTION()
 	void FollowAIPath();
-	void OnMoveCompletedCallback(FAIRequestID RequestID, EPathFollowingResult::Type Result);
 
+	UFUNCTION()
+	void ContinuePath();
+	
 	UPROPERTY()
 	int CurrentPathIndex = 0;;
 
@@ -52,6 +58,38 @@ public:
 
 	UPROPERTY()
 	ATarget* Self;
+
+	UFUNCTION()
+	void KilledTarget();
+
+	bool bIntentionallyStoppedMovement = false;
+
+	FTimerHandle WalkingReactionTimerHandle;
+
+	FTimerHandle FiringReactionTimerHandle;
+
+	UPROPERTY(EditAnywhere)
+	float WalkingReactionLowerBound = 0.5f;
+
+	UPROPERTY(EditAnywhere)
+	float WalkingReactionUpperBound = 1.0f;
+
+	UFUNCTION()
+	void StopMovementAfterDelay();
+
+	UPROPERTY(EditAnywhere)
+	float FiringReactionLowerBound = 0.4f;
+
+	UPROPERTY(EditAnywhere)
+	float FiringReactionUpperBound = 0.7f;
+
+	UFUNCTION()
+	void StartFiringAfterDelay();
+
+	UPROPERTY()
+	AActor* TempActor;
+	
+	
 	
 	
 };
