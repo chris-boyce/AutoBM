@@ -46,11 +46,11 @@ public:
 	UPROPERTY()
 	AAIPath* AiPath;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI|Stats")
 	float SightRadius = 3000;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI|Stats")
 	float LoseRadius = 5000;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI|Stats")
 	float VisionAngle = 360;
 
 	UPROPERTY()
@@ -65,19 +65,19 @@ public:
 
 	FTimerHandle FiringReactionTimerHandle;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="AI|Stats")
 	float WalkingReactionLowerBound = 0.3f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="AI|Stats")
 	float WalkingReactionUpperBound = 0.7f;
 
 	UFUNCTION()
 	void StopMovementAfterDelay();
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="AI|Stats")
 	float FiringReactionLowerBound = 0.4f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="AI|Stats")
 	float FiringReactionUpperBound = 0.7f;
 
 	UFUNCTION()
@@ -85,16 +85,32 @@ public:
 
 	UPROPERTY()
 	AActor* TempActor;
+
+	UPROPERTY()
+	TArray<AActor*> CurrentlySensedActors;
 	
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="AI|Stats")
 	UCurveFloat* AimCurve;
 
 	UFUNCTION()
 	void RecoilDivision(int CurrentSprayBullet);
 
-	//Bullets Missed Before Reset
-	//Time Before Aim Reset
-	//Is headshot or body?
-	
+	UPROPERTY(EditAnywhere, Category="AI|Stats")
+	float HeadshotPercentageAim = 25.0f;
+
+	UPROPERTY(EditAnywhere, Category="AI|Stats")
+	int BulletMissedResetAmount = 3;
+
+	UPROPERTY(EditAnywhere, Category="AI|Stats")
+	float TimeForAimToResetAfterMissed = 1.0f;
+
+	UFUNCTION()
+	FVector CalculateAimTarget();
+
+	UFUNCTION()
+	void BulletMissedResetAim();
+
+	UPROPERTY()
+	int BulletMissCount;
 	
 };

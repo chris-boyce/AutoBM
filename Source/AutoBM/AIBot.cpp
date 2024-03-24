@@ -19,6 +19,7 @@ void AAIBot::OnPossess(APawn* InPawn) //When AI Enters Pawn Body
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() 
 	{
 		Self->AIRifle->RecoilDiv.AddDynamic(this, &AAIBot::RecoilDivision);
+		Self->AIRifle->BulletMissed.AddDynamic(this, &AAIBot::BulletMissedResetAim);
 		}, 1.0f, false);
 }
 
@@ -34,7 +35,6 @@ void AAIBot::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult&
 	
 	if(!bIntentionallyStoppedMovement) //When reached way point -> To the next one
 	{
-		UE_LOG(LogTemp,Warning,TEXT("Has Ended Movement"));
 		CurrentPathIndex++;
 		FollowAIPath();
 		Super::OnMoveCompleted(RequestID, Result);
@@ -80,23 +80,47 @@ void AAIBot::StopMovementAfterDelay() //Delay to simulate Human Reaction times o
 
 void AAIBot::StartFiringAfterDelay() //Delay to simulate Human Reaction Times of seeing to shooting
 {
-	SetFocus(TempActor);
-	FVector Head = Cast<ATarget>(TempActor)->GetHeadLocation(); 
-	Self->AIRifle->ToggleFire(true, Head);
+	SetFocus(CurrentlySensedActors[0]);
+	Self->AIRifle->ToggleFire(true, CalculateAimTarget());
 }
 
 void AAIBot::RecoilDivision(int CurrentSprayBullet) //Calculation of the recoil using the AimCurve the bigger the more accurate
 {
 	float AimDivider = AimCurve->GetFloatValue(CurrentSprayBullet);
 	Self->AIRifle->RecoilDivider = AimDivider;
-	UE_LOG(LogTemp, Warning, TEXT("AimDivider: %f"), AimDivider);
+}
+
+FVector AAIBot::CalculateAimTarget()
+{
+	int RandomNumber = FMath::RandRange(1, 100);
+	if (RandomNumber <= HeadshotPercentageAim)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Headshot"));
+		return Cast<ATarget>(CurrentlySensedActors[0])->GetHeadLocation();
+		
+	}
+	UE_LOG(LogTemp, Warning, TEXT("BodyShot"));
+	return Cast<ATarget>(CurrentlySensedActors[0])->GetBodyLocation(); 
+}
+
+void AAIBot::BulletMissedResetAim()
+{
+	BulletMissCount++;
+	if(BulletMissCount >= BulletMissedResetAmount)
+	{
+		Self->AIRifle->ToggleFire(false, FVector::ZeroVector);
+		FTimerHandle ResetAimTime;
+		GetWorld()->GetTimerManager().SetTimer(ResetAimTime, this, &AAIBot::StartFiringAfterDelay , TimeForAimToResetAfterMissed, false);
+		BulletMissCount = 0;
+	}
 }
 
 void AAIBot::TargetUpdate(AActor* SeenActor, FAIStimulus const Stim)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Updated Perception"));
 	if(Cast<ATarget>(SeenActor) && Stim.WasSuccessfullySensed()) //If has seen ATarget Enter Sight Sense
 	{
+		CurrentlySensedActors.Add(SeenActor);
+		
 		//------------ Debug Lines -----------------// Also Sets Head Rotation Maybe Not Needed?
 		FVector HeadLocation = Self->HeadDirectionsComp->GetComponentLocation();
 		FVector TargetLocation = SeenActor->GetActorLocation();
@@ -109,6 +133,7 @@ void AAIBot::TargetUpdate(AActor* SeenActor, FAIStimulus const Stim)
 		GetWorld()->LineTraceSingleByChannel(HitResult, Start, End,ECC_Visibility, FCollisionQueryParams(FName(TEXT("")), false, this) );
 		DrawDebugLine(GetWorld(), Start, End, FColor::Green, false,  5.0f,   0,      2.0f    );
 		//------------ Debug Lines -----------------//
+
 		
 		//Binds to Death so can carry on once killed Target
 		Cast<ATarget>(SeenActor)->OnDeath.AddDynamic(this, &AAIBot::KilledTarget);
@@ -117,7 +142,6 @@ void AAIBot::TargetUpdate(AActor* SeenActor, FAIStimulus const Stim)
 		Self->GetCharacterMovement()->bOrientRotationToMovement = false;
 
 		//Aiming at the Actor when Seen Target
-		TempActor = SeenActor;
 		float RandomFiringReactionTime = FMath::RandRange(FiringReactionLowerBound, FiringReactionUpperBound);
 		GetWorldTimerManager().SetTimer(FiringReactionTimerHandle, this, &AAIBot::StartFiringAfterDelay, RandomFiringReactionTime, false);
 
@@ -153,7 +177,16 @@ void AAIBot::ContinuePath()
 
 void AAIBot::KilledTarget() //Callback to when killed a Target - Stops Firing and Starts Movement Again
 {
+	CurrentlySensedActors.RemoveAt(0);
 	Self->AIRifle->ToggleFire(false, FVector::ZeroVector);
-	ContinuePath();
+	if(CurrentlySensedActors.IsEmpty())
+	{
+		ContinuePath();
+	}
+	else
+	{
+		StartFiringAfterDelay();
+	}
+	
 }
 

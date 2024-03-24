@@ -9,6 +9,7 @@
 #include "AIRifle.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRecoilDiv, int, CurrentSprayIndex);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBulletMissed);
 
 UCLASS()
 class AUTOBM_API AAIRifle : public AActor
@@ -62,5 +63,7 @@ public:
 	float RecoilDivider = 1;
 
 	FRecoilDiv RecoilDiv;
+
+	FBulletMissed BulletMissed;
 
 };

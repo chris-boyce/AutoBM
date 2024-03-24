@@ -31,10 +31,7 @@ void AAIRifle::BeginPlay()
 			}
 		}
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("THIS IS NOT FOUND"));
-	}
+	
 }
 
 
@@ -80,8 +77,6 @@ FVector AAIRifle::ApplySprayPattern(FVector Vector)
 
 	FVector NewDirection = DirectionRotator.Vector();
 	
-	UE_LOG(LogTemp, Warning, TEXT("New Direction Vector: X=%f, Y=%f, Z=%f"), NewDirection.X, NewDirection.Y, NewDirection.Z);
-
 	return NewDirection;
 }
 
@@ -110,7 +105,6 @@ void AAIRifle::FireBullet()
 		return;
 	}
 	CurrentAmmo--;
-	UE_LOG(LogTemp, Warning, TEXT("Fire Bullet"));
 	FVector HeadLocation = HeadDirection->GetComponentLocation();
 	FVector TargetLocation = CurrentTarget;
 	FVector Direction = (TargetLocation - HeadLocation).GetSafeNormal();
@@ -146,9 +140,14 @@ void AAIRifle::FireBullet()
 			{
 				HitHandler->HandleHit(HitComponent, DamageInfo);
 			}
-			
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Bullet Missed"));
+				BulletMissed.Broadcast();
+			}
 		}
 	}
+	
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red, false,  5.0f,   0,      1.0f    );
 	
 }
