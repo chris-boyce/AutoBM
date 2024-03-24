@@ -44,8 +44,6 @@ void ATarget::BeginPlay()
 
 	AAIController* AIController = Cast<AAIController>(GetController());
 	
-	
-	
 }
 
 void ATarget::Tick(float DeltaTime)
@@ -142,6 +140,16 @@ void ATarget::DestroyPawn()
 AAIPath* ATarget::GetAIPath()
 {
 	return AIPath;
+}
+
+FVector ATarget::GetHeadLocation()
+{
+	return HeadCollision->GetComponentLocation();
+}
+
+FVector ATarget::GetBodyLocation()
+{
+	return BodyCollision->GetComponentLocation();
 }
 
 

@@ -8,6 +8,8 @@
 #include "GameFramework/Actor.h"
 #include "AIRifle.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRecoilDiv, int, CurrentSprayIndex);
+
 UCLASS()
 class AUTOBM_API AAIRifle : public AActor
 {
@@ -29,7 +31,7 @@ public:
 
 	void FireGun();
 	void StopFireGun();
-	void ToggleFire(bool Toggle, AActor* Target);
+	void ToggleFire(bool Toggle, FVector Target);
 	
 	FVector ApplySprayPattern(FVector Vector);
 
@@ -37,7 +39,7 @@ public:
 	void FireBullet();
 
 	UPROPERTY(VisibleAnywhere)
-	AActor* CurrentActor;
+	FVector CurrentTarget;
 
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* HeadDirection;
@@ -56,5 +58,9 @@ public:
 	int CurrentAmmo = 30;
 
 	void Reload();
+
+	float RecoilDivider = 1;
+
+	FRecoilDiv RecoilDiv;
 
 };

@@ -55,11 +55,11 @@ void AAIRifle::StopFireGun()
 	CurrentPatternIndex = 0;
 }
 
-void AAIRifle::ToggleFire(bool Toggle, AActor* Target)
+void AAIRifle::ToggleFire(bool Toggle, FVector Target)
 {
 	if(Toggle)
 	{
-		CurrentActor = Target;
+		CurrentTarget = Target;
 		FireGun();
 	}
 	else
@@ -70,12 +70,13 @@ void AAIRifle::ToggleFire(bool Toggle, AActor* Target)
 
 FVector AAIRifle::ApplySprayPattern(FVector Vector)
 {
+	RecoilDiv.Broadcast(CurrentPatternIndex);
 	FVector2D Pattern = SprayPattern[CurrentPatternIndex].SpreadFactor;
 	CurrentPatternIndex = CurrentPatternIndex + 1;
 
 	FRotator DirectionRotator = Vector.Rotation();
-	DirectionRotator.Yaw += Pattern.X;
-	DirectionRotator.Pitch += Pattern.Y;
+	DirectionRotator.Yaw += Pattern.X / RecoilDivider;
+	DirectionRotator.Pitch += Pattern.Y / RecoilDivider;
 
 	FVector NewDirection = DirectionRotator.Vector();
 	
@@ -111,8 +112,7 @@ void AAIRifle::FireBullet()
 	CurrentAmmo--;
 	UE_LOG(LogTemp, Warning, TEXT("Fire Bullet"));
 	FVector HeadLocation = HeadDirection->GetComponentLocation();
-	if(!CurrentActor) return;
-	FVector TargetLocation = CurrentActor->GetActorLocation();
+	FVector TargetLocation = CurrentTarget;
 	FVector Direction = (TargetLocation - HeadLocation).GetSafeNormal();
 	FRotator NewRotation = Direction.Rotation();
 	HeadDirection->SetWorldRotation(NewRotation);

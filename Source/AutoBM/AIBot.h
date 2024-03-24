@@ -66,10 +66,10 @@ public:
 	FTimerHandle FiringReactionTimerHandle;
 
 	UPROPERTY(EditAnywhere)
-	float WalkingReactionLowerBound = 0.5f;
+	float WalkingReactionLowerBound = 0.3f;
 
 	UPROPERTY(EditAnywhere)
-	float WalkingReactionUpperBound = 1.0f;
+	float WalkingReactionUpperBound = 0.7f;
 
 	UFUNCTION()
 	void StopMovementAfterDelay();
@@ -86,7 +86,15 @@ public:
 	UPROPERTY()
 	AActor* TempActor;
 	
-	
+	UPROPERTY(EditAnywhere)
+	UCurveFloat* AimCurve;
+
+	UFUNCTION()
+	void RecoilDivision(int CurrentSprayBullet);
+
+	//Bullets Missed Before Reset
+	//Time Before Aim Reset
+	//Is headshot or body?
 	
 	
 };

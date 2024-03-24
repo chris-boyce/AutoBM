@@ -35,6 +35,12 @@ public:
 	UPROPERTY(EditAnywhere, Category="BodySetup")
 	USphereComponent* HeadCollision;
 
+	UFUNCTION()
+	FVector GetHeadLocation();
+
+	UFUNCTION()
+	FVector GetBodyLocation();
+
 	UPROPERTY(EditAnywhere, Category="BodySetup")
 	UCapsuleComponent* BodyCollision;
 

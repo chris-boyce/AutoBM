@@ -9,31 +9,37 @@
 #include "Navigation/PathFollowingComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 
-void AAIBot::OnPossess(APawn* InPawn)
+void AAIBot::OnPossess(APawn* InPawn) //When AI Enters Pawn Body 
 {
-	Super::OnPossess(InPawn);
-	Self = Cast<ATarget>(GetPawn());
+	Super::OnPossess(InPawn);//Gets Self and the AI Path
+	Self = Cast<ATarget>(GetPawn()); 
 	AiPath = Cast<AAIPath>(UGameplayStatics::GetActorOfClass(GetWorld(), AAIPath::StaticClass()));
-	
+
+	FTimerHandle TimerHandle; //Adds Bind to the weapon that will work out recoil when the shooting starts
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() 
+	{
+		Self->AIRifle->RecoilDiv.AddDynamic(this, &AAIBot::RecoilDivision);
+		}, 1.0f, false);
 }
 
-void AAIBot::BeginPlay()
+void AAIBot::BeginPlay() //Starts the walking Process
 {
 	Super::BeginPlay();
 	FollowAIPath();
 	
 }
 
-void AAIBot::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
+void AAIBot::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) //When Reaches Waypoint or when stopped
 {
-	if(!bIntentionallyStoppedMovement)
+	
+	if(!bIntentionallyStoppedMovement) //When reached way point -> To the next one
 	{
 		UE_LOG(LogTemp,Warning,TEXT("Has Ended Movement"));
 		CurrentPathIndex++;
 		FollowAIPath();
 		Super::OnMoveCompleted(RequestID, Result);
 	}
-	else
+	else //Will not run next waypoint if stop Intentionally 
 	{
 		bIntentionallyStoppedMovement = false;
 	}
@@ -41,7 +47,7 @@ void AAIBot::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult&
 	
 }
 
-AAIBot::AAIBot(FObjectInitializer const& ObjectInitializer)
+AAIBot::AAIBot(FObjectInitializer const& ObjectInitializer) //Sets up sight on construct
 {
 	SetupSight();
 }
@@ -60,31 +66,38 @@ void AAIBot::SetupSight()
 		SenseSight->DetectionByAffiliation.bDetectFriendlies  = true;
 		SenseSight->DetectionByAffiliation.bDetectEnemies = true;
 		GetPerceptionComponent()->SetDominantSense(*SenseSight->GetSenseImplementation());
-		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAIBot::TargetUpdate);
-		UE_LOG(LogTemp, Warning, TEXT("Add Dynamic"));
+		GetPerceptionComponent()->OnTargetPerceptionUpdated.AddDynamic(this, &AAIBot::TargetUpdate); //Bind to Function when object enters sight or leaves
 		GetPerceptionComponent()->ConfigureSense(*SenseSight);
 		
 	}
 }
 
-void AAIBot::StopMovementAfterDelay()
+void AAIBot::StopMovementAfterDelay() //Delay to simulate Human Reaction times of seeing to stopping -> Inaccurary when moving and shooting
 {
-	bIntentionallyStoppedMovement = true;
+	bIntentionallyStoppedMovement = true; 
 	StopMovement();
 }
 
-void AAIBot::StartFiringAfterDelay()
+void AAIBot::StartFiringAfterDelay() //Delay to simulate Human Reaction Times of seeing to shooting
 {
 	SetFocus(TempActor);
-	Self->AIRifle->ToggleFire(true, TempActor);
+	FVector Head = Cast<ATarget>(TempActor)->GetHeadLocation(); 
+	Self->AIRifle->ToggleFire(true, Head);
+}
+
+void AAIBot::RecoilDivision(int CurrentSprayBullet) //Calculation of the recoil using the AimCurve the bigger the more accurate
+{
+	float AimDivider = AimCurve->GetFloatValue(CurrentSprayBullet);
+	Self->AIRifle->RecoilDivider = AimDivider;
+	UE_LOG(LogTemp, Warning, TEXT("AimDivider: %f"), AimDivider);
 }
 
 void AAIBot::TargetUpdate(AActor* SeenActor, FAIStimulus const Stim)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Updated Perception"));
-	if(Cast<ATarget>(SeenActor) && Stim.WasSuccessfullySensed())
+	if(Cast<ATarget>(SeenActor) && Stim.WasSuccessfullySensed()) //If has seen ATarget Enter Sight Sense
 	{
-		
+		//------------ Debug Lines -----------------// Also Sets Head Rotation Maybe Not Needed?
 		FVector HeadLocation = Self->HeadDirectionsComp->GetComponentLocation();
 		FVector TargetLocation = SeenActor->GetActorLocation();
 		FVector Direction = (TargetLocation - HeadLocation).GetSafeNormal();
@@ -93,9 +106,10 @@ void AAIBot::TargetUpdate(AActor* SeenActor, FAIStimulus const Stim)
 		FVector Start = HeadLocation;
 		FVector End = Start + Self->HeadDirectionsComp->GetForwardVector() * 10000; 
 		FHitResult HitResult;
-		GetWorld()->LineTraceSingleByChannel(HitResult, Start,     End,      ECC_Visibility, FCollisionQueryParams(FName(TEXT("")), false, this) );
+		GetWorld()->LineTraceSingleByChannel(HitResult, Start, End,ECC_Visibility, FCollisionQueryParams(FName(TEXT("")), false, this) );
 		DrawDebugLine(GetWorld(), Start, End, FColor::Green, false,  5.0f,   0,      2.0f    );
-
+		//------------ Debug Lines -----------------//
+		
 		//Binds to Death so can carry on once killed Target
 		Cast<ATarget>(SeenActor)->OnDeath.AddDynamic(this, &AAIBot::KilledTarget);
 
@@ -110,15 +124,12 @@ void AAIBot::TargetUpdate(AActor* SeenActor, FAIStimulus const Stim)
 		//Stopping The AI when Seen Target
 		float RandomWalkingReactionTime = FMath::RandRange(WalkingReactionLowerBound, WalkingReactionUpperBound);
 		GetWorldTimerManager().SetTimer(WalkingReactionTimerHandle, this, &AAIBot::StopMovementAfterDelay, RandomWalkingReactionTime, false);
-		
-		UE_LOG(LogTemp, Warning, TEXT("Random Firing Reaction Time: %f seconds"), RandomFiringReactionTime);
-		UE_LOG(LogTemp, Warning, TEXT("Random Walking Reaction Time: %f seconds"), RandomWalkingReactionTime);
+
 	}
-	else
+	else //When Lost Target - Stop Firing and Clears Focus so looks the way of movement - Continues Path
 	{
 		
-		UE_LOG(LogTemp, Warning, TEXT("No Target"));
-		Self->AIRifle->ToggleFire(false, nullptr);
+		Self->AIRifle->ToggleFire(false, FVector::ZeroVector);
 		ClearFocus(EAIFocusPriority::Gameplay);
 		ContinuePath();
 	}
@@ -126,11 +137,10 @@ void AAIBot::TargetUpdate(AActor* SeenActor, FAIStimulus const Stim)
 
 void AAIBot::FollowAIPath()
 {
-	Self->GetCharacterMovement()->bOrientRotationToMovement = true;
-	if(CurrentPathIndex < AiPath->Num())
+	Self->GetCharacterMovement()->bOrientRotationToMovement = true; //Sets Look at walking Direction
+	if(CurrentPathIndex < AiPath->Num()) //Path Avaiblible 
 	{
 		MoveToLocation(AiPath->GetPatrolPoint(CurrentPathIndex));
-		UE_LOG(LogTemp, Warning, TEXT("Has Moved"));
 	}
 }
 
@@ -141,17 +151,9 @@ void AAIBot::ContinuePath()
 	bIntentionallyStoppedMovement = false;
 }
 
-void AAIBot::KilledTarget()
+void AAIBot::KilledTarget() //Callback to when killed a Target - Stops Firing and Starts Movement Again
 {
-	UE_LOG(LogTemp, Warning, TEXT("Killed Enemy"));
-	Self->AIRifle->ToggleFire(false, nullptr);
+	Self->AIRifle->ToggleFire(false, FVector::ZeroVector);
 	ContinuePath();
 }
-
-
-
-
-
-
-
 
