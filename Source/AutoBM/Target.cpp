@@ -16,8 +16,6 @@ ATarget::ATarget()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SkeletalMeshComponent = GetMesh();
-
-	
 }
 
 void ATarget::BeginPlay()
@@ -77,23 +75,17 @@ void ATarget::HandleHit(UPrimitiveComponent* HitComponent, FDamageInfo DamageInf
 	FString ComponentName = HitComponent->GetName();
 	if(HitComponent == HeadCollision)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Headshot"));
 		TakeDamage(DamageInfo.HeadshotDamage);
 	}
 	else if(HitComponent == BodyCollision)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Bodyshot"));
 		TakeDamage(DamageInfo.BodyShotDamage);
-		
-		
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Else Shot"));
 		TakeDamage(DamageInfo.AppendageDamage);
 	}
 	
-	UE_LOG(LogTemp, Warning, TEXT("Hit Component Name: %s"), *ComponentName)
 }
 
 void ATarget::TakeDamage(float Damage)
@@ -107,8 +99,9 @@ void ATarget::TakeDamage(float Damage)
 
 void ATarget::Death()
 {
+	AIRifle->Destroy();
 	DetachFromControllerPendingDestroy();
-	UE_LOG(LogTemp, Warning, TEXT("Death Called"));
+	
 
 	HeadCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	BodyCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -134,7 +127,6 @@ void ATarget::Death()
 void ATarget::DestroyPawn()
 {
 	Destroy();
-	AIRifle->Destroy();
 }
 
 AAIPath* ATarget::GetAIPath()

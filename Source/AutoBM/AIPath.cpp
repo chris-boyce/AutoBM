@@ -11,7 +11,7 @@ AAIPath::AAIPath()
 
 }
 
-// Called when the game starts or when spawned
+
 void AAIPath::BeginPlay()
 {
 	Super::BeginPlay();

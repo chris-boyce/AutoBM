@@ -21,12 +21,14 @@ void AAIBot::OnPossess(APawn* InPawn) //When AI Enters Pawn Body
 		Self->AIRifle->RecoilDiv.AddDynamic(this, &AAIBot::RecoilDivision);
 		Self->AIRifle->BulletMissed.AddDynamic(this, &AAIBot::BulletMissedResetAim);
 		}, 1.0f, false);
+
+	FollowAIPath();
 }
 
 void AAIBot::BeginPlay() //Starts the walking Process
 {
 	Super::BeginPlay();
-	FollowAIPath();
+	
 	
 }
 
@@ -95,11 +97,9 @@ FVector AAIBot::CalculateAimTarget()
 	int RandomNumber = FMath::RandRange(1, 100);
 	if (RandomNumber <= HeadshotPercentageAim)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Headshot"));
 		return Cast<ATarget>(CurrentlySensedActors[0])->GetHeadLocation();
 		
 	}
-	UE_LOG(LogTemp, Warning, TEXT("BodyShot"));
 	return Cast<ATarget>(CurrentlySensedActors[0])->GetBodyLocation(); 
 }
 
@@ -113,6 +113,20 @@ void AAIBot::BulletMissedResetAim()
 		GetWorld()->GetTimerManager().SetTimer(ResetAimTime, this, &AAIBot::StartFiringAfterDelay , TimeForAimToResetAfterMissed, false);
 		BulletMissCount = 0;
 	}
+}
+
+void AAIBot::InitializeController(float HeadShotPercentage, int BulletMissResetCount, float AimResetSpeed,
+	UCurveFloat* AimCurves, float FiringReactionLower, float FiringReactionUpper, float WalkingReactionLower,
+	float WalkingReactionUpper)
+{
+	HeadshotPercentageAim = HeadShotPercentage;
+	BulletMissedResetAmount = BulletMissResetCount;
+	TimeForAimToResetAfterMissed = AimResetSpeed;
+	AimCurve = AimCurves;
+	FiringReactionLowerBound = FiringReactionLower;
+	FiringReactionUpperBound = FiringReactionUpper;
+	WalkingReactionLowerBound = WalkingReactionLower;
+	WalkingReactionUpperBound = WalkingReactionUpper;
 }
 
 void AAIBot::TargetUpdate(AActor* SeenActor, FAIStimulus const Stim)

@@ -112,5 +112,8 @@ public:
 
 	UPROPERTY()
 	int BulletMissCount;
+
+	UFUNCTION()
+	void InitializeController(float HeadShotPercentage, int BulletMissResetCount, float AimResetSpeed, UCurveFloat* AimCurves, float FiringReactionLower, float FiringReactionUpper, float WalkingReactionLower, float WalkingReactionUpper );
 	
 };

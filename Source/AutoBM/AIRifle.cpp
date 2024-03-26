@@ -142,7 +142,6 @@ void AAIRifle::FireBullet()
 			}
 			else
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Bullet Missed"));
 				BulletMissed.Broadcast();
 			}
 		}
