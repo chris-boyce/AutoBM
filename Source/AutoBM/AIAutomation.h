@@ -8,6 +8,41 @@
 #include "GameFramework/Actor.h"
 #include "AIAutomation.generated.h"
 
+USTRUCT(BlueprintType)
+struct FBotData : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	float HeadShotPercentage;
+
+	UPROPERTY(EditAnywhere)
+	int BulletMissResetAmount;
+
+	UPROPERTY(EditAnywhere)
+	float AimResetSpeed;
+
+	UPROPERTY(EditAnywhere)
+	int RecoilCurve;
+
+	UPROPERTY(EditAnywhere)
+	int VarietyCurve;
+
+	UPROPERTY(EditAnywhere)
+	float FiringReactionLower;
+
+	UPROPERTY(EditAnywhere)
+	float FiringReactionUpper;
+
+	UPROPERTY(EditAnywhere)
+	float WalkingReactionLower;
+
+	UPROPERTY(EditAnywhere)
+	float WalkingReactionUpper;
+	
+};
+
+
 UCLASS()
 class AUTOBM_API AAIAutomation : public AActor
 {
@@ -32,6 +67,9 @@ public:
 	TSubclassOf<ATarget> BotClass;
 
 	UPROPERTY(EditAnywhere)
+	TSubclassOf<ATarget> TargetClass;
+
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<AAIBot> BotControllerClass;
 
 	UPROPERTY()
@@ -42,6 +80,9 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	TArray<UCurveFloat*> AimsCurves;
+
+	UPROPERTY(EditAnywhere)
+	TArray<UCurveFloat*> VarietyCurve;
 	
 	UFUNCTION()
 	void BotConstruction();

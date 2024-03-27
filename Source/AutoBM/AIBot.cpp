@@ -3,6 +3,7 @@
 
 #include "AIBot.h"
 
+#include "AITracker.h"
 #include "NavigationSystem.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -23,6 +24,13 @@ void AAIBot::OnPossess(APawn* InPawn) //When AI Enters Pawn Body
 		}, 1.0f, false);
 
 	FollowAIPath();
+
+
+	UAITracker* MyComponent = Cast<UAITracker>(Self->GetComponentByClass(UAITracker::StaticClass()));
+	if(MyComponent)
+	{
+		MyComponent->StartTracking(this , Self->AIRifle);
+	}
 }
 
 void AAIBot::BeginPlay() //Starts the walking Process
@@ -88,7 +96,7 @@ void AAIBot::StartFiringAfterDelay() //Delay to simulate Human Reaction Times of
 
 void AAIBot::RecoilDivision(int CurrentSprayBullet) //Calculation of the recoil using the AimCurve the bigger the more accurate
 {
-	float AimDivider = AimCurve->GetFloatValue(CurrentSprayBullet);
+	float AimDivider = AimCurve->GetFloatValue(CurrentSprayBullet) + FMath::RandRange(0.0f, VarietyCurve->GetFloatValue(CurrentSprayBullet));
 	Self->AIRifle->RecoilDivider = AimDivider;
 }
 
@@ -116,7 +124,7 @@ void AAIBot::BulletMissedResetAim()
 }
 
 void AAIBot::InitializeController(float HeadShotPercentage, int BulletMissResetCount, float AimResetSpeed,
-	UCurveFloat* AimCurves, float FiringReactionLower, float FiringReactionUpper, float WalkingReactionLower,
+	UCurveFloat* AimCurves, UCurveFloat* VarCurve, float FiringReactionLower, float FiringReactionUpper, float WalkingReactionLower,
 	float WalkingReactionUpper)
 {
 	HeadshotPercentageAim = HeadShotPercentage;
@@ -127,6 +135,7 @@ void AAIBot::InitializeController(float HeadShotPercentage, int BulletMissResetC
 	FiringReactionUpperBound = FiringReactionUpper;
 	WalkingReactionLowerBound = WalkingReactionLower;
 	WalkingReactionUpperBound = WalkingReactionUpper;
+	VarietyCurve = VarCurve;
 }
 
 void AAIBot::TargetUpdate(AActor* SeenActor, FAIStimulus const Stim)

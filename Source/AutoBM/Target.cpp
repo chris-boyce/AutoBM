@@ -4,6 +4,7 @@
 #include "Target.h"
 
 #include "AIController.h"
+#include "AITracker.h"
 #include "HUDManager.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -41,6 +42,8 @@ void ATarget::BeginPlay()
 	HeadDirectionsComp = AIRifle->GetComponentByClass<UBoxComponent>();
 
 	AAIController* AIController = Cast<AAIController>(GetController());
+
+	
 	
 }
 

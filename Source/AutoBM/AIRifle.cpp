@@ -138,11 +138,29 @@ void AAIRifle::FireBullet()
 			IShootable* HitHandler = Cast<IShootable>(HitActor);
 			if (HitHandler)
 			{
+				BulletHit.Broadcast();
+				if(HitComponent->GetName() == "HeadSphere")
+				{
+					Headshot.Broadcast();
+					UE_LOG(LogTemp, Warning, TEXT("HeadshotCalled"));
+				}
+				if(HitComponent->GetName() == "BodyCapsule")
+				{
+					
+					BodyShot.Broadcast();
+					UE_LOG(LogTemp, Warning, TEXT("BodyShotCalled"));
+				}
+				if(HitComponent->GetName() != "BodyCapsule" && HitComponent->GetName() != "HeadSphere")
+				{
+					OtherShot.Broadcast();
+					UE_LOG(LogTemp, Warning, TEXT("OtherShotCalled"));
+				}
 				HitHandler->HandleHit(HitComponent, DamageInfo);
 			}
 			else
 			{
 				BulletMissed.Broadcast();
+				UE_LOG(LogTemp, Warning, TEXT("Missed Called"));
 			}
 		}
 	}

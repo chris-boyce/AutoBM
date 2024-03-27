@@ -37,7 +37,7 @@ void AAIAutomation::BotConstruction()
 	CurrentBotController = GetWorld()->SpawnActor<AAIBot>(BotControllerClass, FVector::ZeroVector, FRotator::ZeroRotator);
 	if(CurrentBotController)
 	{
-		CurrentBotController->InitializeController(25,10,1,AimsCurves[0],0.3,1,0.2,0.7);
+		CurrentBotController->InitializeController(20,5,0.5,AimsCurves[0], VarietyCurve[0],0.3,0.7,0.1,0.3);
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 		CurrentBot = GetWorld()->SpawnActor<ATarget>(BotClass, StartPoint, FRotator::ZeroRotator, SpawnParams);
@@ -53,7 +53,7 @@ void AAIAutomation::TargetConstruction()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		
-		GetWorld()->SpawnActor<AActor>(BotClass, WorldTargetPoint, FRotator::ZeroRotator, SpawnParams);
+		GetWorld()->SpawnActor<AActor>(TargetClass, WorldTargetPoint, FRotator::ZeroRotator, SpawnParams);
 	}
 }
 

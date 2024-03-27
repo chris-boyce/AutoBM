@@ -10,6 +10,10 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRecoilDiv, int, CurrentSprayIndex);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBulletMissed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBulletHit);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHeadshot);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBodyShot);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOtherShot);
 
 UCLASS()
 class AUTOBM_API AAIRifle : public AActor
@@ -65,5 +69,13 @@ public:
 	FRecoilDiv RecoilDiv;
 
 	FBulletMissed BulletMissed;
+
+	FBulletHit BulletHit;
+
+	FHeadshot Headshot;
+
+	FBodyShot BodyShot;
+
+	FOtherShot OtherShot;
 
 };

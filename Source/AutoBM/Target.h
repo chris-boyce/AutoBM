@@ -29,6 +29,7 @@ public:
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	
 	UPROPERTY(EditAnywhere, Category="BodySetup")
 	USkeletalMeshComponent* SkeletalMeshComponent;
 

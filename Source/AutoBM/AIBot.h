@@ -92,6 +92,9 @@ public:
 	UPROPERTY(EditAnywhere, Category="AI|Stats")
 	UCurveFloat* AimCurve;
 
+	UPROPERTY(EditAnywhere, Category="AI|Stats")
+	UCurveFloat* VarietyCurve;
+
 	UFUNCTION()
 	void RecoilDivision(int CurrentSprayBullet);
 
@@ -114,6 +117,6 @@ public:
 	int BulletMissCount;
 
 	UFUNCTION()
-	void InitializeController(float HeadShotPercentage, int BulletMissResetCount, float AimResetSpeed, UCurveFloat* AimCurves, float FiringReactionLower, float FiringReactionUpper, float WalkingReactionLower, float WalkingReactionUpper );
+	void InitializeController(float HeadShotPercentage, int BulletMissResetCount, float AimResetSpeed, UCurveFloat* AimCurves, UCurveFloat* VarCurve, float FiringReactionLower, float FiringReactionUpper, float WalkingReactionLower, float WalkingReactionUpper );
 	
 };
