@@ -5,7 +5,6 @@
 
 void UFirstPersonWidget::UpdateAmmo(int CurrentAmmoNum, int FullAmmoAmount)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Called HUD"));
 	FString CurrentAmmoString = FString::FromInt(CurrentAmmoNum);
 	FString FullAmmoString = FString::FromInt(FullAmmoAmount);
 	

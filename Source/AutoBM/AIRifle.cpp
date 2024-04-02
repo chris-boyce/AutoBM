@@ -83,7 +83,16 @@ FVector AAIRifle::ApplySprayPattern(FVector Vector)
 FVector AAIRifle::ApplyInaccuracy(FVector Vector)
 {
 	float Speed = Cast<ATarget>(GetOwner())->GetVelocity().Normalize();
-	float ClampedSpeed = FMath::Clamp(Speed, 0.0f, 10.0f);
+	float ClampedSpeed = FMath::Clamp(Speed, 0.0f, 100.0f);
+	UE_LOG(LogTemp, Warning, TEXT("Clamped Speed: %f"), ClampedSpeed);
+	if(ClampedSpeed >= 1)
+	{
+		FiringMoving.Broadcast();
+	}
+	else
+	{
+		FiringStopped.Broadcast();
+	}
 	float InaccuracyAmount = ClampedSpeed;
 	float InaccuracyYaw = FMath::RandRange(-InaccuracyAmount, InaccuracyAmount);
 	float InaccuracyPitch = FMath::RandRange(-InaccuracyAmount, InaccuracyAmount);
@@ -142,25 +151,21 @@ void AAIRifle::FireBullet()
 				if(HitComponent->GetName() == "HeadSphere")
 				{
 					Headshot.Broadcast();
-					UE_LOG(LogTemp, Warning, TEXT("HeadshotCalled"));
 				}
 				if(HitComponent->GetName() == "BodyCapsule")
 				{
 					
 					BodyShot.Broadcast();
-					UE_LOG(LogTemp, Warning, TEXT("BodyShotCalled"));
 				}
 				if(HitComponent->GetName() != "BodyCapsule" && HitComponent->GetName() != "HeadSphere")
 				{
 					OtherShot.Broadcast();
-					UE_LOG(LogTemp, Warning, TEXT("OtherShotCalled"));
 				}
 				HitHandler->HandleHit(HitComponent, DamageInfo);
 			}
 			else
 			{
 				BulletMissed.Broadcast();
-				UE_LOG(LogTemp, Warning, TEXT("Missed Called"));
 			}
 		}
 	}

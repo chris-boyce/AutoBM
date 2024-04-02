@@ -46,7 +46,15 @@ public:
 	UFUNCTION()
 	void TimeToDamageStop();
 
+	UFUNCTION()
+	void FiringWhenMoving();
+
+	UFUNCTION()
+	void FiringWhenStopped();
+
 	float StartTime;
+
+	float StartDamageTime;
 
 	float HitTime;
 
@@ -55,6 +63,8 @@ public:
 	TArray<float> KilledTime;
 
 	TArray<float> TimeToDamage;
+
+	TArray<float> DamageToKillTime;
 
 	int TotalShot;
 
@@ -65,6 +75,10 @@ public:
 	int OtherShot;
 
 	int MissedShot;
+
+	int FireMovingCount;
+
+	int FireStopCount;
 
 	FString BotName;
 

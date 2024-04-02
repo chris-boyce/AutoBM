@@ -37,6 +37,9 @@ void UAITracker::StartTracking(AAIBot* AIComp, ATarget* Bot, AAIRifle* AIRifle)
 
 	AIComp->SeenEnemy.AddDynamic(this, &UAITracker::SeenTimer);
 	AIComp->KilledEnemy.AddDynamic(this, &UAITracker::KilledTimerStop);
+	
+	AIRifle->FiringMoving.AddDynamic(this, &UAITracker::FiringWhenMoving);
+	AIRifle->FiringStopped.AddDynamic(this, &UAITracker::FiringWhenStopped);
 
 	Bot->OnDeath.AddDynamic(this, &UAITracker::OnCompletedCourse);
 
@@ -47,14 +50,12 @@ void UAITracker::MissedBullet()
 {
 	TotalShot++;
 	MissedShot++;
-	UE_LOG(LogTemp, Log, TEXT("Missed Shots: %d"), MissedShot);
 }
 
 void UAITracker::HitHead()
 {
 	TotalShot++;
 	HeadShot++;
-	UE_LOG(LogTemp, Log, TEXT("Head Shots: %d"), HeadShot);
 	TimeToDamageStop();
 }
 
@@ -62,7 +63,6 @@ void UAITracker::HitBody()
 {
 	TotalShot++;
 	BodyShot++;
-	UE_LOG(LogTemp, Log, TEXT("Body Shots: %d"), BodyShot);
 	TimeToDamageStop();
 }
 
@@ -70,7 +70,6 @@ void UAITracker::HitOther()
 {
 	TotalShot++;
 	OtherShot++;
-	UE_LOG(LogTemp, Log, TEXT("Other Shots: %d"), OtherShot);
 	TimeToDamageStop();
 }
 
@@ -82,8 +81,7 @@ void UAITracker::SeenTimer()
 void UAITracker::KilledTimerStop()
 {
 	KilledTime.Add(GetWorld()->GetTimeSeconds() - StartTime);
-
-	UE_LOG(LogTemp, Error, TEXT("Elapsed Time: %f seconds"), GetWorld()->GetTimeSeconds() - StartTime);
+	DamageToKillTime.Add(GetWorld()->GetTimeSeconds() - StartDamageTime);
 	FirstHit = true;
 }
 
@@ -92,15 +90,27 @@ void UAITracker::TimeToDamageStop()
 	if(FirstHit)
 	{
 		TimeToDamage.Add(GetWorld()->GetTimeSeconds() - StartTime);
-
-		UE_LOG(LogTemp, Log, TEXT("Elapsed Time To Damage: %f seconds"), GetWorld()->GetTimeSeconds() - StartTime);
+		StartDamageTime = GetWorld()->GetTimeSeconds();
 		FirstHit = false;
 	}
 	
 }
 
+void UAITracker::FiringWhenMoving()
+{
+	FireMovingCount++;
+	UE_LOG(LogTemp, Warning, TEXT("Fired When Moving"));
+}
+
+void UAITracker::FiringWhenStopped()
+{
+	FireStopCount++;
+	UE_LOG(LogTemp, Warning, TEXT("Fired When Stopped"));
+}
+
 void UAITracker::OnComponentDestroyed(bool bDestroyingHierarchy)
 {
+	
 	UE_LOG(LogTemp, Log, TEXT("Total Shots: %d"), TotalShot);
 	UE_LOG(LogTemp, Log, TEXT("Other Shots: %d"), OtherShot);
 	UE_LOG(LogTemp, Log, TEXT("Body Shots: %d"), BodyShot);
@@ -135,9 +145,23 @@ void UAITracker::OnComponentDestroyed(bool bDestroyingHierarchy)
 
 	float AverageTimeToDamage = TotalTimeToDamage / TimeToDamage.Num();
 
+	float FirstBulletToKill = 0.0f;
+	for (float Time : DamageToKillTime)
+	{
+		FirstBulletToKill += Time;
+	}
+
+	float AverageFirstBulletToKill = FirstBulletToKill / DamageToKillTime.Num();
+
+	int total = FireMovingCount + FireStopCount;
+
+	float FiringWhenMovingPercentage = static_cast<float>(FireMovingCount) / total;
+
+	FiringWhenMovingPercentage *= 100.0f;
+
 	FString HasFinishedString = HasFinished ? TEXT("True") : TEXT("False");
 
-	FString DataLine = FString::Printf(TEXT("%s, %f, %f, %f, %f, %s\n"), *BotName, TotalAccuracy, HeadshotPercentage, AverageKillTime, AverageTimeToDamage, *HasFinishedString);
+	FString DataLine = FString::Printf(TEXT("%s, %f, %f, %f, %f, %f, %f, %s\n"), *BotName, TotalAccuracy, HeadshotPercentage, AverageKillTime, AverageTimeToDamage, AverageFirstBulletToKill, FiringWhenMovingPercentage, *HasFinishedString);
 
 	FString FilePath = FPaths::ProjectSavedDir() + TEXT("BotData.csv");
 

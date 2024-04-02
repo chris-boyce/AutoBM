@@ -8,7 +8,6 @@
 
 void UKillFeedWidget::EnemyDeath()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Kill Feed Widget Called"));
 	UUserWidget* KillFeedGraphWidget = CreateWidget<UUserWidget>(this, KillFeedGraphClass);
 	KillFeedVerticalBox->AddChild(KillFeedGraphWidget);
 

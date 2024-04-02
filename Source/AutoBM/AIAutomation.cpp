@@ -3,6 +3,8 @@
 
 #include "AIAutomation.h"
 
+#include "Kismet/GameplayStatics.h"
+
 
 AAIAutomation::AAIAutomation()
 {
@@ -19,7 +21,7 @@ AAIAutomation::AAIAutomation()
 void AAIAutomation::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 5.0f);
 	BoxCollider->OnComponentBeginOverlap.AddDynamic(this, &AAIAutomation::OnOverlapBegin);
 	
 
@@ -37,11 +39,7 @@ void AAIAutomation::BeginPlay()
 			}
 		}
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Bot Data Not Found"));
-	}
-
+	
 	TargetConstruction();
 	BotConstruction();
 	
@@ -87,10 +85,8 @@ void AAIAutomation::TargetConstruction()
 void AAIAutomation::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("NOPE"));
 	if (OtherActor && OtherActor->IsA(ATarget::StaticClass()))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("YEPPP"));
 		CurrentBot->Death();
 		TargetConstruction();
 		BotConstruction();

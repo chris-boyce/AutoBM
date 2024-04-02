@@ -14,6 +14,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBulletHit);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHeadshot);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBodyShot);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOtherShot);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FFiringMoving);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FFiringStopped);
 
 UCLASS()
 class AUTOBM_API AAIRifle : public AActor
@@ -77,5 +79,9 @@ public:
 	FBodyShot BodyShot;
 
 	FOtherShot OtherShot;
+
+	FFiringMoving FiringMoving;
+
+	FFiringStopped FiringStopped;
 
 };
