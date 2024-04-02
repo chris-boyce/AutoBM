@@ -23,7 +23,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION()
-	void StartTracking(AAIBot* AIComp, AAIRifle* AIRifle);
+	void StartTracking(AAIBot* AIComp,ATarget* Bot, AAIRifle* AIRifle);
 
 	UFUNCTION()
 	void MissedBullet();
@@ -37,6 +37,25 @@ public:
 	UFUNCTION()
 	void HitOther();
 
+	UFUNCTION()
+	void SeenTimer();
+
+	UFUNCTION()
+	void KilledTimerStop();
+
+	UFUNCTION()
+	void TimeToDamageStop();
+
+	float StartTime;
+
+	float HitTime;
+
+	bool FirstHit = true;
+
+	TArray<float> KilledTime;
+
+	TArray<float> TimeToDamage;
+
 	int TotalShot;
 
 	int HeadShot;
@@ -46,6 +65,13 @@ public:
 	int OtherShot;
 
 	int MissedShot;
+
+	FString BotName;
+
+	bool HasFinished = false;
+
+	UFUNCTION()
+	void OnCompletedCourse();
 
 	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
 

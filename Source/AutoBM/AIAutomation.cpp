@@ -21,6 +21,27 @@ void AAIAutomation::BeginPlay()
 	Super::BeginPlay();
 	
 	BoxCollider->OnComponentBeginOverlap.AddDynamic(this, &AAIAutomation::OnOverlapBegin);
+	
+
+	if (BotDataTable)
+	{
+		TArray<FName> RowNames = BotDataTable->GetRowNames();
+		
+		for (const FName& RowName : RowNames)
+		{
+			FBotData* RowData = BotDataTable->FindRow<FBotData>(RowName, TEXT(""));
+
+			if (RowData)
+			{
+				BotData.Add(*RowData);
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Bot Data Not Found"));
+	}
+
 	TargetConstruction();
 	BotConstruction();
 	
@@ -37,12 +58,18 @@ void AAIAutomation::BotConstruction()
 	CurrentBotController = GetWorld()->SpawnActor<AAIBot>(BotControllerClass, FVector::ZeroVector, FRotator::ZeroRotator);
 	if(CurrentBotController)
 	{
-		CurrentBotController->InitializeController(20,5,0.5,AimsCurves[0], VarietyCurve[0],0.3,0.7,0.1,0.3);
+		CurrentBotController->InitializeController(FString::FromInt(CurrentBotIndex), BotData[CurrentBotIndex].HeadShotPercentage,
+									BotData[CurrentBotIndex].BulletMissResetAmount,BotData[CurrentBotIndex].AimResetSpeed,
+									AimsCurves[0], VarietyCurve[0],BotData[CurrentBotIndex].FiringReactionLower,
+									BotData[CurrentBotIndex].FiringReactionUpper,BotData[CurrentBotIndex].WalkingReactionLower,
+									BotData[CurrentBotIndex].WalkingReactionUpper);
+		
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 		CurrentBot = GetWorld()->SpawnActor<ATarget>(BotClass, StartPoint, FRotator::ZeroRotator, SpawnParams);
 		CurrentBotController->Possess(CurrentBot);
 	}
+	CurrentBotIndex++;
 }
 
 void AAIAutomation::TargetConstruction()

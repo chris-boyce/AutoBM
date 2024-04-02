@@ -10,7 +10,8 @@
 #include "NavigationSystem.h"
 #include "AIBot.generated.h"
 
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSeenEnemy);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FKilledEnemy);
 UCLASS()
 class AUTOBM_API AAIBot : public AAIController
 {
@@ -116,7 +117,16 @@ public:
 	UPROPERTY()
 	int BulletMissCount;
 
+	UPROPERTY()
+	FString BotName;
+	
+	UPROPERTY()
+	FSeenEnemy SeenEnemy;
+
+	UPROPERTY()
+	FKilledEnemy KilledEnemy;
+
 	UFUNCTION()
-	void InitializeController(float HeadShotPercentage, int BulletMissResetCount, float AimResetSpeed, UCurveFloat* AimCurves, UCurveFloat* VarCurve, float FiringReactionLower, float FiringReactionUpper, float WalkingReactionLower, float WalkingReactionUpper );
+	void InitializeController(FString Name, float HeadShotPercentage, int BulletMissResetCount, float AimResetSpeed, UCurveFloat* AimCurves, UCurveFloat* VarCurve, float FiringReactionLower, float FiringReactionUpper, float WalkingReactionLower, float WalkingReactionUpper );
 	
 };

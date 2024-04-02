@@ -72,6 +72,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AAIBot> BotControllerClass;
 
+	UPROPERTY(EditAnywhere)
+	UDataTable* BotDataTable;
+
+	UPROPERTY(VisibleAnywhere)
+	TArray<FBotData> BotData;
+
 	UPROPERTY()
 	AAIBot* CurrentBotController;
 
@@ -93,6 +99,8 @@ public:
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UPROPERTY(EditAnywhere)
+	int CurrentBotIndex = 0;
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI", meta=(MakeEditWidget="true", AllowPrivateAccess="true"))
 	TArray<FVector> TargetPoints;

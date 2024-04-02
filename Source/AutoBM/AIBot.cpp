@@ -29,7 +29,7 @@ void AAIBot::OnPossess(APawn* InPawn) //When AI Enters Pawn Body
 	UAITracker* MyComponent = Cast<UAITracker>(Self->GetComponentByClass(UAITracker::StaticClass()));
 	if(MyComponent)
 	{
-		MyComponent->StartTracking(this , Self->AIRifle);
+		MyComponent->StartTracking(this, Self, Self->AIRifle);
 	}
 }
 
@@ -123,10 +123,11 @@ void AAIBot::BulletMissedResetAim()
 	}
 }
 
-void AAIBot::InitializeController(float HeadShotPercentage, int BulletMissResetCount, float AimResetSpeed,
+void AAIBot::InitializeController(FString Name, float HeadShotPercentage, int BulletMissResetCount, float AimResetSpeed,
 	UCurveFloat* AimCurves, UCurveFloat* VarCurve, float FiringReactionLower, float FiringReactionUpper, float WalkingReactionLower,
 	float WalkingReactionUpper)
 {
+	BotName = Name;
 	HeadshotPercentageAim = HeadShotPercentage;
 	BulletMissedResetAmount = BulletMissResetCount;
 	TimeForAimToResetAfterMissed = AimResetSpeed;
@@ -156,6 +157,7 @@ void AAIBot::TargetUpdate(AActor* SeenActor, FAIStimulus const Stim)
 		GetWorld()->LineTraceSingleByChannel(HitResult, Start, End,ECC_Visibility, FCollisionQueryParams(FName(TEXT("")), false, this) );
 		DrawDebugLine(GetWorld(), Start, End, FColor::Green, false,  5.0f,   0,      2.0f    );
 		//------------ Debug Lines -----------------//
+		SeenEnemy.Broadcast();
 
 		
 		//Binds to Death so can carry on once killed Target
@@ -200,6 +202,7 @@ void AAIBot::ContinuePath()
 
 void AAIBot::KilledTarget() //Callback to when killed a Target - Stops Firing and Starts Movement Again
 {
+	KilledEnemy.Broadcast();
 	CurrentlySensedActors.RemoveAt(0);
 	Self->AIRifle->ToggleFire(false, FVector::ZeroVector);
 	if(CurrentlySensedActors.IsEmpty())

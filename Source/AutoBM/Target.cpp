@@ -102,6 +102,7 @@ void ATarget::TakeDamage(float Damage)
 
 void ATarget::Death()
 {
+	OnDeath.Broadcast();
 	AIRifle->Destroy();
 	DetachFromControllerPendingDestroy();
 	
@@ -117,7 +118,7 @@ void ATarget::Death()
 	SkeletalMeshComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	SkeletalMeshComponent->SetSimulatePhysics(true);
 
-	OnDeath.Broadcast();
+	
 
 	
 	
