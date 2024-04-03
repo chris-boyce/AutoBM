@@ -6,8 +6,10 @@
 #include "FirstPersonCharacterController.h"
 #include "FirstPersonPlayer.h"
 #include "KillFeedWidget.h"
+#include "ScoreboardWidget.h"
 #include "GameFramework/Actor.h"
 #include "HUDManager.generated.h"
+
 class ATarget;
 UCLASS()
 class AUTOBM_API AHUDManager : public AActor
@@ -32,10 +34,21 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="KillFeed")
 	UKillFeedWidget* KillFeedWidget;
+	
+	UPROPERTY(EditAnywhere, Category="HUD")
+	TSubclassOf<UUserWidget> ScoreboardClass;
 
+	UPROPERTY(EditAnywhere, Category="HUD")
+	UScoreboardWidget* ScoreboardWidget;
 	
 	UFUNCTION()
 	void AddEnemyToSubList(ATarget* Enemy);
+
+	UFUNCTION()
+	void ToggleScoreboardWidget();
+
+	UPROPERTY(VisibleAnywhere, Category="HUD")
+	bool IsScoreboardVisible = false;
 
 	
 	

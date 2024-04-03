@@ -29,9 +29,7 @@ void ATarget::BeginPlay()
 	
 	CapsuleComponentz = GetComponentByClass<UCapsuleComponent>();
 
-	AActor* HUDManagerActor = UGameplayStatics::GetActorOfClass(GetWorld(), AHUDManager::StaticClass());
-	AHUDManager* HUDManager = Cast<AHUDManager>(HUDManagerActor);
-	HUDManager->AddEnemyToSubList(this);
+	
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
@@ -42,6 +40,10 @@ void ATarget::BeginPlay()
 	HeadDirectionsComp = AIRifle->GetComponentByClass<UBoxComponent>();
 
 	AAIController* AIController = Cast<AAIController>(GetController());
+
+	AActor* HUDManagerActor = UGameplayStatics::GetActorOfClass(GetWorld(), AHUDManager::StaticClass());
+	AHUDManager* HUDManager = Cast<AHUDManager>(HUDManagerActor);
+	HUDManager->AddEnemyToSubList(this);
 
 	
 	

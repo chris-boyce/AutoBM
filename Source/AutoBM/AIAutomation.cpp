@@ -21,7 +21,7 @@ AAIAutomation::AAIAutomation()
 void AAIAutomation::BeginPlay()
 {
 	Super::BeginPlay();
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 5.0f);
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 3.0f);
 	BoxCollider->OnComponentBeginOverlap.AddDynamic(this, &AAIAutomation::OnOverlapBegin);
 	
 

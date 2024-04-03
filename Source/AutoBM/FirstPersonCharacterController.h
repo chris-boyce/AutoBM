@@ -58,6 +58,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="First Person Player|Character Movement")
 	TObjectPtr<UInputAction> ActionInspect;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="First Person Player|Character Movement")
+	TObjectPtr<UInputAction> ActionScoreBoardToggle;
+
 	UFUNCTION()
 	void AllowInput(bool bAllowMove);
 
@@ -103,6 +106,7 @@ protected:
 	void HandleFireUp();
 	void HandleReload();
 	void HandleInspect();
+	void HandleScoreboardToggle();
 
 	
 
@@ -110,7 +114,7 @@ private:
     UPROPERTY()
     UEnhancedInputComponent* EnhancedInputComponent = nullptr;
     
-    
+    bool IsScoreboardActive = false;
     
     UPROPERTY()
     bool bPlayerCanMove = true;

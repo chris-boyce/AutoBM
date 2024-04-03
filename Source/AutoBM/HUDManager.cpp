@@ -2,7 +2,6 @@
 
 
 #include "HUDManager.h"
-
 #include "Target.h"
 
 
@@ -12,10 +11,14 @@ AHUDManager::AHUDManager()
 
 void AHUDManager::BeginPlay()
 {
-	Super::BeginPlay();
+	AddKillFeedHUD();
 	APlayerController* Player = GetWorld()->GetFirstPlayerController();
 	PlayerController = Cast<AFirstPersonCharacterController>(Player);
-	AddKillFeedHUD();
+	ScoreboardWidget = CreateWidget<UScoreboardWidget>(GetWorld(), ScoreboardClass);
+	ScoreboardWidget->AddToViewport();
+	ScoreboardWidget->SetVisibility(ESlateVisibility::Hidden);
+	KillFeedWidget = CreateWidget<UKillFeedWidget>(GetWorld(), KillFeedClass);
+	Super::BeginPlay();
 	
 }
 
@@ -23,9 +26,10 @@ void AHUDManager::BeginPlay()
 
 void AHUDManager::AddKillFeedHUD()
 {
-	KillFeedWidget = CreateWidget<UKillFeedWidget>(GetWorld(), KillFeedClass);
+	
 	if(KillFeedWidget)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Has Made HUD"));
 		KillFeedWidget->AddToViewport();
 	}
 	
@@ -34,8 +38,26 @@ void AHUDManager::AddKillFeedHUD()
 
 void AHUDManager::AddEnemyToSubList(ATarget* Enemy)
 {
-	UE_LOG(LogTemp, Warning, TEXT("HAS SUBBED"));
-	Enemy->OnDeath.AddDynamic(KillFeedWidget, &UKillFeedWidget::EnemyDeath);
+	if(KillFeedWidget)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("HAS SUBBED"));
+		Enemy->OnDeath.AddDynamic(KillFeedWidget, &UKillFeedWidget::EnemyDeath);
+	}
+}
 
+void AHUDManager::ToggleScoreboardWidget()
+{
+	if(IsScoreboardVisible)
+	{
+		ScoreboardWidget->SetVisibility(ESlateVisibility::Hidden);
+		ScoreboardWidget->Deactivate();
+		IsScoreboardVisible = false;
+	}
+	else
+	{
+		ScoreboardWidget->SetVisibility(ESlateVisibility::Visible);
+		ScoreboardWidget->Activate();
+		IsScoreboardVisible = true;
+	}
 }
 

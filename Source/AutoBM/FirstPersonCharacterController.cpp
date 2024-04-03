@@ -3,11 +3,14 @@
 
 #include "FirstPersonCharacterController.h"
 
+#include "EngineUtils.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Rifle.h"
 #include "FirstPersonPlayer.h"
 #include "FirstPersonWidget.h"
+#include "HUDManager.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void AFirstPersonCharacterController::MouseVisibility(bool bIsVisable)
@@ -131,6 +134,10 @@ void AFirstPersonCharacterController::OnPossess(APawn* aPawn)
 	if(ActionInspect)
 	{
 		EnhancedInputComponent->BindAction(ActionInspect, ETriggerEvent::Triggered, this, &AFirstPersonCharacterController::HandleInspect);
+	}
+	if(ActionScoreBoardToggle)
+	{
+		EnhancedInputComponent->BindAction(ActionScoreBoardToggle, ETriggerEvent::Triggered, this, &AFirstPersonCharacterController::HandleScoreboardToggle);
 	}
 	
 }
@@ -280,6 +287,27 @@ void AFirstPersonCharacterController::HandleInspect()
 	if(PlayerCharacter->Rifle)
 	{
 		PlayerCharacter->InspectGun();
+	}
+	
+}
+
+void AFirstPersonCharacterController::HandleScoreboardToggle()
+{
+	AActor* HUDManagerActor = UGameplayStatics::GetActorOfClass(GetWorld(), AHUDManager::StaticClass());
+	AHUDManager* HUDManager = Cast<AHUDManager>(HUDManagerActor);
+	HUDManager->ToggleScoreboardWidget();
+	if(IsScoreboardActive)
+	{
+		MouseVisibility(false);
+		IsScoreboardActive = false;
+		AllowInput(true);
+		
+	}
+	else
+	{
+		MouseVisibility(true);
+		IsScoreboardActive = true;
+		AllowInput(false);
 	}
 	
 }

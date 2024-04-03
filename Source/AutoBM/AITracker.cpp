@@ -161,6 +161,11 @@ void UAITracker::OnComponentDestroyed(bool bDestroyingHierarchy)
 
 	FString HasFinishedString = HasFinished ? TEXT("True") : TEXT("False");
 
+	if(!HasFinished)
+	{
+		return;
+	}
+
 	FString DataLine = FString::Printf(TEXT("%s, %f, %f, %f, %f, %f, %f, %s\n"), *BotName, TotalAccuracy, HeadshotPercentage, AverageKillTime, AverageTimeToDamage, AverageFirstBulletToKill, FiringWhenMovingPercentage, *HasFinishedString);
 
 	FString FilePath = FPaths::ProjectSavedDir() + TEXT("BotData.csv");
