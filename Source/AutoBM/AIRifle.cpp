@@ -84,7 +84,6 @@ FVector AAIRifle::ApplyInaccuracy(FVector Vector)
 {
 	float Speed = Cast<ATarget>(GetOwner())->GetVelocity().Normalize();
 	float ClampedSpeed = FMath::Clamp(Speed, 0.0f, 100.0f);
-	UE_LOG(LogTemp, Warning, TEXT("Clamped Speed: %f"), ClampedSpeed);
 	if(ClampedSpeed >= 1)
 	{
 		FiringMoving.Broadcast();
@@ -93,7 +92,7 @@ FVector AAIRifle::ApplyInaccuracy(FVector Vector)
 	{
 		FiringStopped.Broadcast();
 	}
-	float InaccuracyAmount = ClampedSpeed;
+	float InaccuracyAmount = ClampedSpeed * 10.0f;
 	float InaccuracyYaw = FMath::RandRange(-InaccuracyAmount, InaccuracyAmount);
 	float InaccuracyPitch = FMath::RandRange(-InaccuracyAmount, InaccuracyAmount);
 

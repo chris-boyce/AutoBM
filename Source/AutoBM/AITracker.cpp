@@ -99,13 +99,11 @@ void UAITracker::TimeToDamageStop()
 void UAITracker::FiringWhenMoving()
 {
 	FireMovingCount++;
-	UE_LOG(LogTemp, Warning, TEXT("Fired When Moving"));
 }
 
 void UAITracker::FiringWhenStopped()
 {
 	FireStopCount++;
-	UE_LOG(LogTemp, Warning, TEXT("Fired When Stopped"));
 }
 
 void UAITracker::OnComponentDestroyed(bool bDestroyingHierarchy)
@@ -165,8 +163,31 @@ void UAITracker::OnComponentDestroyed(bool bDestroyingHierarchy)
 	{
 		return;
 	}
+	float NormalizedTotalAccuracy = TotalAccuracy / 100.0f; //Higher is Better
+	float NormalizedHeadshotPercentage = HeadshotPercentage / 100.0f; 
+	float NormalizedTTK = 1.0f - (AverageKillTime / 5.0f);  //Lower is better
+	float NormalizedTTD = 1.0f - (AverageTimeToDamage / 3.0f); 
+	float NormalizedFBD = 1.0f - (AverageFirstBulletToKill / 4.0f); 
+	float NormalizedFMP = 1.0f - (FiringWhenMovingPercentage / 100.0f);
+	
+	float TotalScore = 0;
+	TotalScore = TotalScore + (NormalizedTotalAccuracy * 0.2f);
+	TotalScore = TotalScore + (NormalizedHeadshotPercentage * 0.2f);
+	TotalScore = TotalScore + (NormalizedTTK * 0.2f);
+	TotalScore = TotalScore + (NormalizedTTD * 0.2f);
+	TotalScore = TotalScore + (NormalizedFBD * 0.1f);
+	TotalScore = TotalScore + (NormalizedFMP * 0.1f);
+	
+	UE_LOG(LogTemp, Log, TEXT("NormalFMP: %f"), NormalizedFMP);
+	UE_LOG(LogTemp, Log, TEXT("NormalAcc: %f"), NormalizedTotalAccuracy);
+	UE_LOG(LogTemp, Log, TEXT("NormalHSP: %f"), NormalizedHeadshotPercentage);
+	UE_LOG(LogTemp, Log, TEXT("NormalTTK: %f"), NormalizedTTK);
+	UE_LOG(LogTemp, Log, TEXT("NormalTTK: %f"), NormalizedTTD);
+	UE_LOG(LogTemp, Log, TEXT("NormalFBD: %f"), NormalizedFBD);
+	UE_LOG(LogTemp, Warning, TEXT("Score : %f"), TotalScore);
 
-	FString DataLine = FString::Printf(TEXT("%s, %f, %f, %f, %f, %f, %f, %s\n"), *BotName, TotalAccuracy, HeadshotPercentage, AverageKillTime, AverageTimeToDamage, AverageFirstBulletToKill, FiringWhenMovingPercentage, *HasFinishedString);
+	
+	FString DataLine = FString::Printf(TEXT("%s, %f, %f, %f, %f, %f, %f, %s, %f\n"), *BotName, TotalAccuracy, HeadshotPercentage, AverageKillTime, AverageTimeToDamage, AverageFirstBulletToKill, FiringWhenMovingPercentage, *HasFinishedString, TotalScore);
 
 	FString FilePath = FPaths::ProjectSavedDir() + TEXT("BotData.csv");
 

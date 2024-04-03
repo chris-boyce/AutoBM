@@ -30,6 +30,10 @@ public:
 	float MoveFiringPercentage;
 	UPROPERTY(VisibleAnywhere)
 	FString DidFinish;
+	UPROPERTY(VisibleAnywhere)
+	float NormalizedScore;
+	UPROPERTY(VisibleAnywhere)
+	float FinalRating;
 	
 };
 
@@ -129,6 +133,9 @@ public:
 	UPROPERTY()
 	int CurrentScoreboardIndex = 0;
 
+	UFUNCTION()
+	float CalculateRating(float NormalizedScore);
+
 	FTimerHandle ScoreboardItemTimerHandle;
 
 	UFUNCTION()
@@ -136,6 +143,14 @@ public:
 
 	ESortOptions SortOption;
 
-	
+	UPROPERTY(EditAnywhere)
+	UCurveFloat* Curve;
+
+	float P = 0.2316419;
+	float B1 = 0.319381530;
+	float B2 = -0.356563782;
+	float B3 = 1.781477937;
+	float B4 = -1.821255978;
+	float B5 = 1.330274429;
 	
 };

@@ -31,10 +31,15 @@ void UScoreboardWidget::Activate()
 			ScoreboardStats.HitToDeath = FCString::Atof(*Columns[5]);
 			ScoreboardStats.MoveFiringPercentage = FCString::Atof(*Columns[6]);
 			ScoreboardStats.DidFinish = Columns[7];
-			
+			ScoreboardStats.NormalizedScore = FCString::Atof(*Columns[8]);
 			ScoreboardArray.Add(ScoreboardStats);
 		}
 	}
+	for(auto& Score : ScoreboardArray)
+	{
+		Score.FinalRating = CalculateRating(Score.NormalizedScore);
+	}
+	
 	SortArray(SortOption);
 	DisplayScoreboardGraph();
 }
@@ -108,6 +113,57 @@ void UScoreboardWidget::DisplayNextScoreboardGraph()
 			DisplayNextScoreboardGraph();
 		});
 	}
+}
+
+float UScoreboardWidget::CalculateRating(float NormalizedScore)
+{
+	float MeanTotal = 0;
+	for(auto Score : ScoreboardArray)
+	{
+		MeanTotal += Score.NormalizedScore;
+	}
+	float Mean = MeanTotal / static_cast<float>(ScoreboardArray.Num());
+
+	float Variance = 0;
+	for (auto Score : ScoreboardArray)
+	{
+		Variance += FMath::Pow(Score.NormalizedScore - Mean, 2);
+	}
+	float FinalVarience = Variance / static_cast<float>(ScoreboardArray.Num() - 1);
+
+	float STDDev = FMath::Sqrt(FinalVarience);
+
+	float X = NormalizedScore;
+	float ZScore = (X - Mean) / STDDev;
+	
+	float t = 1 / (1 + P * FMath::Abs(ZScore));
+	float t_pow = t; 
+	float b_sum = B1 * t_pow;
+	t_pow *= t; 
+	b_sum += B2 * t_pow;
+	t_pow *= t; 
+	b_sum += B3 * t_pow;
+	t_pow *= t; 
+	b_sum += B4 * t_pow;
+	t_pow *= t; 
+	b_sum += B5 * t_pow;
+	
+	float cdf = 1 - (1 / (FMath::Sqrt(2 * PI))) * FMath::Exp(-FMath::Pow(ZScore, 2) / 2) * b_sum;
+	float percentile;
+	if (ZScore < 0)
+	{
+		percentile =  1 - cdf;
+	}
+	else
+	{
+		percentile = cdf;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Yeet : %f"), percentile);
+	float FinalRating = FMath::Lerp(-10.0f, 10.0f, percentile);
+	UE_LOG(LogTemp, Warning, TEXT("Yeetus : %f"), FinalRating);
+	return FinalRating;
+
+	
 }
 
 void UScoreboardWidget::SortArray(ESortOptions Option)

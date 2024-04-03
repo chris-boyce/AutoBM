@@ -56,9 +56,10 @@ void AAIAutomation::BotConstruction()
 	CurrentBotController = GetWorld()->SpawnActor<AAIBot>(BotControllerClass, FVector::ZeroVector, FRotator::ZeroRotator);
 	if(CurrentBotController)
 	{
+		int temp = BotData[CurrentBotIndex].RecoilCurve - 1;
 		CurrentBotController->InitializeController(FString::FromInt(CurrentBotIndex), BotData[CurrentBotIndex].HeadShotPercentage,
 									BotData[CurrentBotIndex].BulletMissResetAmount,BotData[CurrentBotIndex].AimResetSpeed,
-									AimsCurves[0], VarietyCurve[0],BotData[CurrentBotIndex].FiringReactionLower,
+									AimsCurves[temp], VarietyCurve[0],BotData[CurrentBotIndex].FiringReactionLower,
 									BotData[CurrentBotIndex].FiringReactionUpper,BotData[CurrentBotIndex].WalkingReactionLower,
 									BotData[CurrentBotIndex].WalkingReactionUpper);
 		
@@ -68,6 +69,10 @@ void AAIAutomation::BotConstruction()
 		CurrentBotController->Possess(CurrentBot);
 	}
 	CurrentBotIndex++;
+	if(CurrentBotIndex == 100)
+	{
+		CurrentBotIndex = 0;
+	}
 }
 
 void AAIAutomation::TargetConstruction()
