@@ -3,11 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "RatingWidget.h"
+
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "Components/CanvasPanel.h"
 #include "Components/ScrollBox.h"
 #include "ScoreboardWidget.generated.h"
 
+class URatingWidgetGraph;
 class UScoreboardGraphWidget;
 USTRUCT(BlueprintType)
 struct FScoreboardStats
@@ -34,7 +38,19 @@ public:
 	float NormalizedScore;
 	UPROPERTY(VisibleAnywhere)
 	float FinalRating;
-	
+	UPROPERTY(VisibleAnywhere)
+	float Percentile;
+};
+
+USTRUCT(BlueprintType)
+struct FRatingStruct
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY()
+	float FinalRating;
+	UPROPERTY()
+	float Percentile;
 };
 
 UENUM(BlueprintType)
@@ -47,7 +63,8 @@ enum class ESortOptions : uint8
 	TimeToKill,
 	TimeToDamage,
 	HitToDeath,
-	MoveFiringPercentage
+	MoveFiringPercentage,
+	Rating
 };
 
 
@@ -75,7 +92,22 @@ public:
 	UScrollBox* GraphScrollBox;
 
 	UPROPERTY(BlueprintReadOnly, Category = "HUD", meta = (BindWidget))
+	UCanvasPanel* ScoreCanvas;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<URatingWidget> RatingWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<URatingWidgetGraph> RatingGraphClass;
+	
+	UPROPERTY()
+	URatingWidget* RatingWidget;
+
+	UPROPERTY(BlueprintReadOnly, Category = "HUD", meta = (BindWidget))
 	UButton* RefreshButton;
+
+	UPROPERTY(BlueprintReadOnly, Category = "HUD", meta = (BindWidget))
+	UButton* SwitchPageButton;
 
 	UPROPERTY(BlueprintReadOnly, Category = "HUD", meta = (BindWidget))
 	UButton* SortNone;
@@ -117,12 +149,20 @@ public:
 	UFUNCTION()
 	void HandleSortMFP(){SortOption = ESortOptions::MoveFiringPercentage ;HandleRefreshButton();}
 
+	UScrollBox* RatingGraph;
 	
 	UFUNCTION()
 	void Deactivate();
 
 	UFUNCTION()
 	void HandleRefreshButton();
+
+	void DisplayNextRatingGraph();
+	UFUNCTION()
+	void DisplayRatingGraph();
+	
+	UFUNCTION()
+	void HandleSwitchPage();
 
 	UFUNCTION()
 	void DisplayScoreboardGraph();
@@ -134,7 +174,9 @@ public:
 	int CurrentScoreboardIndex = 0;
 
 	UFUNCTION()
-	float CalculateRating(float NormalizedScore);
+	FRatingStruct CalculateRating(float NormalizedScore);
+
+	
 
 	FTimerHandle ScoreboardItemTimerHandle;
 
@@ -152,5 +194,6 @@ public:
 	float B3 = 1.781477937;
 	float B4 = -1.821255978;
 	float B5 = 1.330274429;
-	
+
+	bool isStats = true;
 };
