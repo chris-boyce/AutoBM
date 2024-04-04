@@ -26,9 +26,5 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "TextBoxs", meta = (BindWidget))
 	UTextBlock* TB2 = nullptr;
-
-	UPROPERTY(BlueprintReadOnly, Category = "TextBoxs", meta = (BindWidget))
-	UImage* CurveImage = nullptr;
-
-
+	
 };

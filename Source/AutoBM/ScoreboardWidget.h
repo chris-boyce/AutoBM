@@ -157,6 +157,9 @@ public:
 	UFUNCTION()
 	void HandleRefreshButton();
 
+	UFUNCTION()
+	void CountRatingInterval();
+
 	void DisplayNextRatingGraph();
 	UFUNCTION()
 	void DisplayRatingGraph();

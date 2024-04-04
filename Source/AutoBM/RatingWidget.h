@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "Components/HorizontalBox.h"
+#include "Components/Image.h"
 #include "Components/ScrollBox.h"
 #include "RatingWidget.generated.h"
 
@@ -19,5 +21,17 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "HUD", meta = (BindWidget))
 	UScrollBox* RatingGraphScrollBox;
+
+	UPROPERTY(BlueprintReadOnly, Category = "HUD", meta = (BindWidget))
+	UHorizontalBox* GraphBox;
+
+	UFUNCTION()
+	void CreateGraph(TArray<int32> Counts);
+
+	UFUNCTION()
+	void GetAllImages();
+
+	UPROPERTY()
+	TArray<UImage*> Lines;
 	
 };

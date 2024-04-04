@@ -96,6 +96,35 @@ void UScoreboardWidget::HandleRefreshButton()
 	Activate();
 }
 
+void UScoreboardWidget::CountRatingInterval()
+{
+	const int32 MinValue = -10;
+	const int32 MaxValue = 10;
+	const int32 IntervalCount = MaxValue - MinValue;
+
+	TArray<int32> Counts;
+	Counts.Init(0, IntervalCount);
+
+	for (auto Value : ScoreboardArray)
+	{
+		if (Value.FinalRating >= MinValue && Value.FinalRating <= MaxValue)
+		{
+			int32 Index = FMath::FloorToInt(Value.FinalRating) - MinValue;
+			Counts[Index]++;
+		}
+	}
+	
+	for (int32 i = 0; i < Counts.Num(); ++i)
+	{
+		float IntervalStart = i + MinValue;
+		float IntervalEnd = IntervalStart + 1.0f;
+		UE_LOG(LogTemp, Warning, TEXT("Interval [%f, %f): %d"), IntervalStart, IntervalEnd, Counts[i]);
+	}
+	RatingWidget->CreateGraph(Counts);
+	
+	
+}
+
 void UScoreboardWidget::DisplayNextRatingGraph()
 {
 	if (CurrentScoreboardIndex < ScoreboardArray.Num())
@@ -116,6 +145,10 @@ void UScoreboardWidget::DisplayNextRatingGraph()
 		{
 			DisplayNextRatingGraph();
 		});
+	}
+	else
+	{
+		CountRatingInterval();
 	}
 }
 

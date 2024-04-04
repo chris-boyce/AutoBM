@@ -171,12 +171,12 @@ void UAITracker::OnComponentDestroyed(bool bDestroyingHierarchy)
 	float NormalizedFMP = 1.0f - (FiringWhenMovingPercentage / 100.0f);
 	
 	float TotalScore = 0;
-	TotalScore = TotalScore + (NormalizedTotalAccuracy * 0.2f);
+	TotalScore = TotalScore + (NormalizedTotalAccuracy * 0.3f);
 	TotalScore = TotalScore + (NormalizedHeadshotPercentage * 0.2f);
 	TotalScore = TotalScore + (NormalizedTTK * 0.2f);
-	TotalScore = TotalScore + (NormalizedTTD * 0.2f);
-	TotalScore = TotalScore + (NormalizedFBD * 0.1f);
-	TotalScore = TotalScore + (NormalizedFMP * 0.1f);
+	TotalScore = TotalScore + (NormalizedTTD * 0.05f);
+	TotalScore = TotalScore + (NormalizedFBD * 0.2f);
+	TotalScore = TotalScore + (NormalizedFMP * 0.05f);
 	
 	UE_LOG(LogTemp, Log, TEXT("NormalFMP: %f"), NormalizedFMP);
 	UE_LOG(LogTemp, Log, TEXT("NormalAcc: %f"), NormalizedTotalAccuracy);

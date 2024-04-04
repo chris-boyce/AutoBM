@@ -15,4 +15,5 @@ void UScoreboardGraphWidget::UpdateWidgetText(FScoreboardStats ScoreboardStats)
 	TB4->SetText(FText::AsNumber(ScoreboardStats.TimeToKill));
 	TB5->SetText(FText::AsNumber(ScoreboardStats.HitToDeath));
 	TB6->SetText(FText::AsNumber(ScoreboardStats.MoveFiringPercentage));
+	TB7->SetText(FText::AsNumber(ScoreboardStats.NormalizedScore));
 }
