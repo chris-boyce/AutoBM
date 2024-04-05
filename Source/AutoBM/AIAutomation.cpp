@@ -21,7 +21,9 @@ AAIAutomation::AAIAutomation()
 void AAIAutomation::BeginPlay()
 {
 	Super::BeginPlay();
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 3.0f);
+	
+		
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 	BoxCollider->OnComponentBeginOverlap.AddDynamic(this, &AAIAutomation::OnOverlapBegin);
 	
 
@@ -41,6 +43,11 @@ void AAIAutomation::BeginPlay()
 	}
 	
 	TargetConstruction();
+	if(RunSim == false)
+	{
+		return;
+	}
+	
 	BotConstruction();
 	
 }

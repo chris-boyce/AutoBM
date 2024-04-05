@@ -12,6 +12,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeath);
 
+
+
 class USphereComponent;
 UCLASS()
 class AUTOBM_API ATarget : public ACharacter, public IShootable
@@ -24,7 +26,16 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUserDeath, ATarget*, Target);
+
+	FOnUserDeath OnUserDeath;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUserDamage, ATarget*, Target);
+
+	FOnUserDamage OnUserDamage;
+	
 	virtual void Tick(float DeltaTime) override;
 	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -88,5 +99,11 @@ public:
 	UPROPERTY()
 	AAIRifle* AIRifle;
 
+	UPROPERTY()
+	bool FirstHit = false;
+
+	
+
 	
 };
+

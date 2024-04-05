@@ -101,6 +101,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	int CurrentBotIndex = 0;
+
+	UPROPERTY(EditAnywhere)
+	bool RunSim = false;
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI", meta=(MakeEditWidget="true", AllowPrivateAccess="true"))
 	TArray<FVector> TargetPoints;

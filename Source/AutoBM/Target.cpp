@@ -96,6 +96,11 @@ void ATarget::HandleHit(UPrimitiveComponent* HitComponent, FDamageInfo DamageInf
 void ATarget::TakeDamage(float Damage)
 {
 	CurrentHealth = CurrentHealth - Damage;
+	if(!FirstHit)
+	{
+		OnUserDamage.Broadcast(this);
+		FirstHit = true;
+	}
 	if(CurrentHealth <= 0)
 	{
 		Death();
@@ -105,6 +110,7 @@ void ATarget::TakeDamage(float Damage)
 void ATarget::Death()
 {
 	OnDeath.Broadcast();
+	OnUserDeath.Broadcast(this);
 	AIRifle->Destroy();
 	DetachFromControllerPendingDestroy();
 	
