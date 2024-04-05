@@ -111,8 +111,10 @@ void ATarget::Death()
 {
 	OnDeath.Broadcast();
 	OnUserDeath.Broadcast(this);
+	
 	AIRifle->Destroy();
-	DetachFromControllerPendingDestroy();
+	
+	
 	
 
 	HeadCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);

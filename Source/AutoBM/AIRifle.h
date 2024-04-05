@@ -32,6 +32,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	
 	FTimerHandle FiringTimerHandle;
+
+	virtual void Destroyed() override;
 	
 	UPROPERTY(EditAnywhere, Category="Damage")
 	FDamageInfo DamageInfo;

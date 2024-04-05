@@ -10,14 +10,16 @@ UUserTracker::UUserTracker()
 {
 
 	PrimaryComponentTick.bCanEverTick = true;
+	TargetClass = ATarget::StaticClass();
 	
 }
 
 void UUserTracker::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	GetWorld()->GetTimerManager().SetTimer(SphereTimerHandle, this, &UUserTracker::ViewPortChecker, 0.5f, true);
-	GetWorld()->GetTimerManager().SetTimer(LineTraceTimerHandle, this, &UUserTracker::IsBeingBlocked, 0.1f, true);
+	GetWorld()->GetTimerManager().SetTimer(LineTraceTimerHandle, this, &UUserTracker::IsBeingBlocked, 0.05f, true);
 }
 
 
@@ -99,20 +101,21 @@ void UUserTracker::IsBeingBlocked()
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if(PlayerController)
 	{
-		FVector PlayerLocation = PlayerController->GetPawn()->GetActorLocation();
+		FVector PlayerViewLocation;
+		FRotator PlayerViewRotation;
+		PlayerController->GetPlayerViewPoint(PlayerViewLocation, PlayerViewRotation);
 		for(AActor* TargetActor : InSenseRadius)
 		{
 			
 			if(TargetActor)
 			{
 				FVector TargetLocation = TargetActor->GetActorLocation();
-
 				FHitResult HitResult;
 				FCollisionQueryParams QueryParams;
 				QueryParams.AddIgnoredActor(PlayerController->GetPawn()); 
 				QueryParams.bTraceComplex = true;
 				
-				bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, PlayerLocation, TargetLocation, ECC_Visibility, QueryParams);
+				bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, PlayerViewLocation, TargetLocation, ECC_Visibility, QueryParams);
 				
 				if(bHit)
 				{
@@ -136,7 +139,6 @@ void UUserTracker::IsBeingBlocked()
 void UUserTracker::StartTimer(ATarget* Target)
 {
 	StartTimeMap.Add(Target, GetWorld()->GetTimeSeconds());
-
 }
 
 void UUserTracker::BotDamage(ATarget* Target)

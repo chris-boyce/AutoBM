@@ -41,6 +41,20 @@ void AAIRifle::Tick(float DeltaTime)
 
 }
 
+void AAIRifle::Destroyed()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Destroied"))
+	RecoilDiv.Clear();
+	BulletMissed.Clear();
+	BulletHit.Clear();
+	Headshot.Clear();
+	BodyShot.Clear();
+	OtherShot.Clear();
+	FiringMoving.Clear();
+	FiringStopped.Clear();
+	Super::Destroyed();
+}
+
 void AAIRifle::FireGun()
 {
 	GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AAIRifle::FireBullet, 0.25f, true);
