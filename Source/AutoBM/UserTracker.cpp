@@ -18,8 +18,7 @@ void UUserTracker::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	GetWorld()->GetTimerManager().SetTimer(SphereTimerHandle, this, &UUserTracker::ViewPortChecker, 0.5f, true);
-	GetWorld()->GetTimerManager().SetTimer(LineTraceTimerHandle, this, &UUserTracker::IsBeingBlocked, 0.05f, true);
+	
 }
 
 
@@ -33,6 +32,8 @@ void UUserTracker::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 void UUserTracker::StartTracking()
 {
+	GetWorld()->GetTimerManager().SetTimer(SphereTimerHandle, this, &UUserTracker::ViewPortChecker, 0.5f, true);
+	GetWorld()->GetTimerManager().SetTimer(LineTraceTimerHandle, this, &UUserTracker::IsBeingBlocked, 0.05f, true);
 }
 
 void UUserTracker::StopTracking()
