@@ -26,6 +26,10 @@ public:
 	void StartTracking();
 
 	void StopTracking();
+
+	void UnbindDelegatesAndTimers();
+
+	void ResetPlayerPos();
 	
 	UFUNCTION()
 	void ViewPortChecker();
@@ -74,4 +78,41 @@ public:
 	
 	UPROPERTY(VisibleAnywhere)
 	TArray<float> KilledTime;
+
+	UPROPERTY()
+	ARifle* Gun;
+
+	int TotalShot;
+
+	int HeadShot;
+
+	int BodyShot;
+
+	int OtherShot;
+
+	int MissedShot;
+
+	int FireMovingCount;
+
+	int FireStopCount;
+
+	FString PlayerName = "Chris";
+
+	UFUNCTION()
+	void MissedBullet();
+
+	UFUNCTION()
+	void HitHead();
+
+	UFUNCTION()
+	void HitBody();
+
+	UFUNCTION()
+	void HitOther();
+
+	UFUNCTION()
+	void FiringWhenMoving();
+
+	UFUNCTION()
+	void FiringWhenStopped();
 };

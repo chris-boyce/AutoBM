@@ -146,12 +146,27 @@ void ARifle::FireWeapon()
 			IShootable* HitHandler = Cast<IShootable>(HitActor);
 			if (HitHandler)
 			{
+				BulletHit.Broadcast();
+				if(HitComponent->GetName() == "HeadSphere")
+				{
+					Headshot.Broadcast();
+				}
+				if(HitComponent->GetName() == "BodyCapsule")
+				{
+					
+					BodyShot.Broadcast();
+				}
+				if(HitComponent->GetName() != "BodyCapsule" && HitComponent->GetName() != "HeadSphere")
+				{
+					OtherShot.Broadcast();
+				}
 				HitHandler->HandleHit(HitComponent, DamageInfo);
 				SpawnDecalAtLocation(HitResult.ImpactPoint, HitResult.ImpactNormal, true);
 				BloodSplatter(HitResult.ImpactPoint);
 			}
 			else
 			{
+				BulletMissed.Broadcast();
 				SpawnDecalAtLocation(HitResult.ImpactPoint, HitResult.ImpactNormal, false);
 			}
 			
@@ -198,6 +213,15 @@ FVector ARifle::ApplyInaccuracy(FVector Direction, float Speed)
 	float InaccuracyYaw = FMath::RandRange(-InaccuracyAmount, InaccuracyAmount);
 	float InaccuracyPitch = FMath::RandRange(-InaccuracyAmount, InaccuracyAmount);
 
+	if(ClampedSpeed >= 1)
+	{
+		FiringMoving.Broadcast();
+	}
+	else
+	{
+		FiringStopped.Broadcast();
+	}
+	
 	FRotator DirectionRotator = Direction.Rotation();
 	DirectionRotator.Yaw += InaccuracyYaw;
 	DirectionRotator.Pitch += InaccuracyPitch;

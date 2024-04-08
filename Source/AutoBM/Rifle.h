@@ -36,6 +36,13 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponFired); //Binds to Gun for anim calls
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWeaponReload);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponUpdateAmmoHUD, int, CO, int, FO); //Binds to HUD
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponUpdateReloadTime, float, ReloadTime);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerBulletMissed);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerBulletHit);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerHeadshot);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerBodyShot);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerOtherShot);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerFiringMoving);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerFiringStopped);
 
 class UNiagaraComponent;
 class ATracer;
@@ -77,6 +84,20 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category="Gun|Stats") 
 	int CurrentAmmo = 30;
+
+	FPlayerBulletHit BulletHit;
+
+	FPlayerBulletMissed BulletMissed;
+
+	FPlayerHeadshot Headshot;
+
+	FPlayerBodyShot BodyShot;
+
+	FPlayerOtherShot OtherShot;
+
+	FPlayerFiringMoving FiringMoving;
+
+	FPlayerFiringStopped FiringStopped;
 	
 private:
 	// Gun Functionality Functions ------------
@@ -164,18 +185,7 @@ private:
 
 	UPROPERTY()
 	UPointLightComponent* LightComponent;
-
-
 	
 	
-
 	
-
-	
-
-	
-	
-
-	
-
 };
