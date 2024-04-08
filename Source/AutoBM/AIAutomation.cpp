@@ -4,6 +4,7 @@
 #include "AIAutomation.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "AutoCam.h"
 
 
 AAIAutomation::AAIAutomation()
@@ -22,8 +23,18 @@ void AAIAutomation::BeginPlay()
 {
 	Super::BeginPlay();
 	
-		
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+	TArray<AActor*> ActorCams;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AAutoCam::StaticClass(), ActorCams);
+	
+	for (AActor* Actor : ActorCams)
+	{
+		AAutoCam* AutoCamActor = Cast<AAutoCam>(Actor);
+		if (AutoCamActor)
+		{
+			AutoCams.Add(AutoCamActor);
+		}
+	}
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), TimeAcceleration);
 	BoxCollider->OnComponentBeginOverlap.AddDynamic(this, &AAIAutomation::OnOverlapBegin);
 	
 
@@ -73,12 +84,25 @@ void AAIAutomation::BotConstruction()
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 		CurrentBot = GetWorld()->SpawnActor<ATarget>(BotClass, StartPoint, FRotator::ZeroRotator, SpawnParams);
-		CurrentBotController->Possess(CurrentBot);
+		
 	}
 	CurrentBotIndex++;
 	if(CurrentBotIndex == 100)
 	{
 		CurrentBotIndex = 0;
+	}
+
+	CurrentBotController->Possess(CurrentBot);
+
+	if (!AutoCams.IsEmpty())
+	{
+		for (AAutoCam* AutoCam : AutoCams)
+		{
+			if (AutoCam != nullptr) 
+			{
+				AutoCam->SetTargetBot(CurrentBot);
+			}
+		}
 	}
 }
 

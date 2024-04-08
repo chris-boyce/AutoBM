@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "AIBot.h"
+
 #include "Target.h"
 #include "GameFramework/Actor.h"
 #include "AIAutomation.generated.h"
 
+class AAutoCam;
 USTRUCT(BlueprintType)
 struct FBotData : public FTableRowBase
 {
@@ -104,6 +106,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	bool RunSim = false;
+
+	UPROPERTY(EditAnywhere)
+	float TimeAcceleration = 1.0f;
+
+	UPROPERTY()
+	TArray<AAutoCam*> AutoCams;
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI", meta=(MakeEditWidget="true", AllowPrivateAccess="true"))
 	TArray<FVector> TargetPoints;
